@@ -18,7 +18,7 @@ public class PostController {
 
     @PostMapping("/posts")
     public void save(PostSaveRequest postSaveRequest) {
-        postService.save(postSaveRequest, );
+        postService.save(postSaveRequest, 0L);
     }
 
     @DeleteMapping("/posts/{postId}")
@@ -45,5 +45,4 @@ public class PostController {
     public void searchByBoard(@PathVariable String boardKind, @PageableDefault Pageable pageable) {
         postService.searchByBoard(boardKind, pageable);
     }
-
 }
