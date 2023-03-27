@@ -25,13 +25,14 @@ public class Post {
     // attribute
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @Column(name = "POST_ID", nullable = false)
     private Long id;
 
     private String title;
     private String content;
     private int star = 0;
 
+    @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
