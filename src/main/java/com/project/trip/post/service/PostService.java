@@ -45,7 +45,7 @@ public interface PostService {
      * 게시글 ID를 통해 해당 게시글의 세부 정보 표시
      *
      * @param postId 열람할 게시글 ID
-     * @return 게시글 세부 정보
+     * @return 게시글 세부 정보(PostResponse)
      */
     PostResponse searchById(Long postId);
 
@@ -54,7 +54,7 @@ public interface PostService {
      *
      * @param boardKind 열람할 게시판 정보
      * @param pageable  표시할 페이지 정보
-     * @return 대략적인 게시글 리스트
+     * @return 게시글 리스트(List<PostSimpleResponse>)
      */
     List<PostSimpleResponse> searchByBoard(String boardKind, Pageable pageable);
 
@@ -62,7 +62,7 @@ public interface PostService {
      * 게시판 ID에 알맞은 게시판을 Entity로 반환
      *
      * @param postId 찾고자 하는 ID
-     * @return ID에 맞는 게시판 Entity 반환
+     * @return ID에 맞는 게시판 Entity(Post) 반환
      * @throws IllegalArgumentException 해당하는 ID의 게시판이 존재하지 않을 경우 에러처리
      */
     Post findPostById(Long postId) throws IllegalArgumentException;
