@@ -1,5 +1,6 @@
 package com.project.trip.post.service;
 
+import com.project.trip.post.entity.Post;
 import com.project.trip.post.model.request.PostSaveRequest;
 import com.project.trip.post.model.request.PostUpdateRequest;
 import com.project.trip.post.model.response.PostResponse;
@@ -57,4 +58,12 @@ public interface PostService {
      */
     List<PostSimpleResponse> searchByBoard(String boardKind, Pageable pageable);
 
+    /**
+     * 게시판 ID에 알맞은 게시판을 Entity로 반환
+     *
+     * @param postId 찾고자 하는 ID
+     * @return ID에 맞는 게시판 Entity 반환
+     * @throws IllegalArgumentException 해당하는 ID의 게시판이 존재하지 않을 경우 에러처리
+     */
+    Post findPostById(Long postId) throws IllegalArgumentException;
 }

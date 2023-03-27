@@ -17,7 +17,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/posts")
-    public void save(PostSaveRequest postSaveRequest) {
+    public void save(@RequestBody PostSaveRequest postSaveRequest) {
         postService.save(postSaveRequest, 0L);
     }
 
@@ -27,7 +27,7 @@ public class PostController {
     }
 
     @PutMapping("/posts/{postId}")
-    public void update(PostUpdateRequest postUpdateRequest, @PathVariable Long postId) {
+    public void update(@RequestBody PostUpdateRequest postUpdateRequest, @PathVariable Long postId) {
         postService.update(postUpdateRequest, postId);
     }
 
@@ -44,5 +44,10 @@ public class PostController {
     @GetMapping("/board/{boardKind}")
     public void searchByBoard(@PathVariable String boardKind, @PageableDefault Pageable pageable) {
         postService.searchByBoard(boardKind, pageable);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public void noPostFound(){
+        //TODO 에러처리
     }
 }
