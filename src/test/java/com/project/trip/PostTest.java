@@ -3,6 +3,8 @@ package com.project.trip;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 
 public class PostTest {
 
@@ -16,18 +18,31 @@ public class PostTest {
 
     }
 
+    @WithMockUser(roles = "ROLE_USER")
     @Test
-    public void 정상적인_게시글_등록() {
+    public void 일반_유저_정상적인_게시글_등록() {
+
+    }
+
+    @WithMockUser(roles = "ROLE_ADMIN")
+    @Test
+    public void 관리자_정상적인_게시글_등록() {
+
+    }
+
+    @WithAnonymousUser
+    @Test
+    public void 비로그인_유저가_게시글_등록() {
 
     }
 
     @Test
-    public void 비로그인_유저가_게시글_등록시도() {
+    public void 유저가_자신의_글_정상적_삭제() {
 
     }
 
     @Test
-    public void 정상적인_게시글_삭제() {
+    public void 관리자가_특정_유저의_글을_정상적_삭제() {
 
     }
 
@@ -62,7 +77,7 @@ public class PostTest {
     }
 
     @Test
-    public void 수정_중_게시글_삭제() {
+    public void 수정_중_게시글_삭제_후_게시글_수정_적용() {
 
     }
 
@@ -87,7 +102,7 @@ public class PostTest {
     }
 
     @Test
-    public void 정상적인_게시글_세부열람() {
+    public void 정상적인_게시글_열람() {
 
     }
 

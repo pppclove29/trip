@@ -5,12 +5,13 @@ import com.project.trip.post.model.request.PostUpdateRequest;
 import com.project.trip.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
 public class Post {
-
-    //constructor
     protected Post() { /* 생성자 숨김 */ }
 
     public static Post from(PostSaveRequest saveRequest) {
@@ -22,7 +23,6 @@ public class Post {
         return post;
     }
 
-    // attribute
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "POST_ID", nullable = false)
@@ -30,16 +30,20 @@ public class Post {
 
     private String title;
     private String content;
-    private int star = 0;
 
     @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    //+ 작성자, 작성일시...
+    //TODO 이미지 엔티티 추가 private List<String> imagesUrl;
+
+    @CreatedDate
+    private LocalDateTime writtenDate;
+
+    private int star = 0;
+    private int views = 0;
 
 
-    //method
     public void update(PostUpdateRequest updateRequest) {
         this.title = updateRequest.getTitle();
         this.content = updateRequest.getContent();
@@ -49,7 +53,12 @@ public class Post {
         //TODO 이미 추천한 경우 처리
         star++;
     }
-    public void setUser(User user){
+
+    public void raiseView() {
+        views++;
+    }
+
+    public void setUser(User user) {
         this.user = user;
     }
 }
