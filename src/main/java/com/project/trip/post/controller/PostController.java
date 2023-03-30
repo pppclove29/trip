@@ -21,6 +21,7 @@ public class PostController {
         //TODO 이미지 List 받기
         //TODO userId 설정
         postService.save(postSaveRequest, 0L);
+
     }
 
     @DeleteMapping("/posts/{postId}")
