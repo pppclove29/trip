@@ -2,6 +2,7 @@ package com.project.trip.plan.controller;
 
 import com.project.trip.plan.model.request.PlanSaveRequest;
 import com.project.trip.plan.service.PlanServiceImpl;
+import com.project.trip.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,6 @@ public class PlanController {
     PlanServiceImpl planService;
     @GetMapping
     public void show(){
-
     }
     @PostMapping
     public void save(@RequestBody PlanSaveRequest planSaveRequest){

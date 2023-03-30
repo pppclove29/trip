@@ -1,12 +1,14 @@
 package com.project.trip.post.service;
 
+import com.project.trip.post.entity.Normal;
 import com.project.trip.post.entity.Post;
-import com.project.trip.post.model.request.PostSaveRequest;
-import com.project.trip.post.model.request.PostUpdateRequest;
-import com.project.trip.post.model.response.PostResponse;
-import com.project.trip.post.model.response.PostSimpleResponse;
+import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostUpdateRequestDto;
+import com.project.trip.post.model.response.PostResponseDto;
+import com.project.trip.post.model.response.PostSimpleResponseDto;
 import com.project.trip.post.repository.PostRepository;
 import com.project.trip.user.entity.User;
+import com.project.trip.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +21,18 @@ import java.util.List;
 @Service
 public class PostServiceImpl implements PostService {
 
+    private final UserRepository userRepository;
     private final PostRepository postRepository;
 
     @Override
-    public void save(PostSaveRequest postSaveRequest, Long userId) {
+    public void save(PostSaveRequestDto postSaveRequestDto, Long userId) {
         //TODO user = findUserById
-        User user = new User();//temp
+        User user = userRepository.findAll().get(0);//temp
 
-        Post post = Post.from(postSaveRequest);
+        Post post = Post.fromDto(postSaveRequestDto);
 
         //좋은 방식인가? 한쪽에서 몰아서 하는게 좋을까?
-        post.setUser(user);
+        post.setWriter(user);
         user.addPost(post);
 
         postRepository.save(post);
@@ -41,22 +44,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void update(PostUpdateRequest postUpdateRequest, Long postId) throws IllegalArgumentException {
-        findPostById(postId).update(postUpdateRequest);
+    public void update(PostUpdateRequestDto postUpdateRequestDto, Long postId) {
+        findPostById(postId).update(postUpdateRequestDto);
     }
 
     @Override
-    public void star(Long postId) throws IllegalArgumentException {
+    public void star(Long postId) {
         findPostById(postId).star();
     }
 
     @Override
-    public PostResponse searchById(Long postId) throws IllegalArgumentException {
-        return PostResponse.from(findPostById(postId));
+    public PostResponseDto searchById(Long postId) {
+        return PostResponseDto.fromEntity(findPostById(postId));
     }
 
     @Override
-    public List<PostSimpleResponse> searchByBoard(String boardKind, Pageable pageable) {
+    public List<PostSimpleResponseDto> searchByBoard(String boardKind, Pageable pageable) {
         //TODO list = repo.findByBoardKind
         //TODO list<entity> to list<dto> with stream
         //TODO return list

@@ -1,7 +1,7 @@
 package com.project.trip.post.entity;
 
-import com.project.trip.post.model.request.PostSaveRequest;
-import com.project.trip.post.model.request.PostUpdateRequest;
+import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,15 +10,22 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
 @Getter
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn
 @Entity
 public class Post {
     protected Post() { /* 생성자 숨김 */ }
 
-    public static Post from(PostSaveRequest saveRequest) {
-        Post post = new Post();
+    public static Post fromDto(PostSaveRequestDto postSaveRequestDto) {
+        Post post = null;
 
-        post.title = saveRequest.getTitle();
-        post.content = saveRequest.getContent();
+        switch (postSaveRequestDto.getKind()) {
+            case NORMAL -> post = new Normal();
+            case NOTICE -> post = new Notice();
+            default -> { /*TODO throw error*/ }
+        }
+        post.title = postSaveRequestDto.getTitle();
+        post.content = postSaveRequestDto.getContent();
 
         return post;
     }
@@ -28,12 +35,12 @@ public class Post {
     @Column(name = "POST_ID", nullable = false)
     private Long id;
 
-    private String title;
-    private String content;
+    protected String title;
+    protected String content;
 
     @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    protected User writer;
 
     //TODO 이미지 엔티티 추가 private List<String> imagesUrl;
 
@@ -44,9 +51,9 @@ public class Post {
     private int views = 0;
 
 
-    public void update(PostUpdateRequest updateRequest) {
-        this.title = updateRequest.getTitle();
-        this.content = updateRequest.getContent();
+    public void update(PostUpdateRequestDto postUpdateRequestDto) {
+        this.title = postUpdateRequestDto.getTitle();
+        this.content = postUpdateRequestDto.getContent();
     }
 
     public void star() {
@@ -58,7 +65,7 @@ public class Post {
         views++;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setWriter(User user) {
+        this.writer = user;
     }
 }

@@ -3,13 +3,13 @@ package com.project.trip.plan.entity;
 
 import com.project.trip.user.entity.User;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 @Entity
 public class Plan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "PLAN_ID", nullable = false)
     private int id;
 
     private String title;

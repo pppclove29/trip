@@ -1,14 +1,16 @@
 package com.project.trip.post.controller;
 
-import com.project.trip.post.model.request.PostSaveRequest;
-import com.project.trip.post.model.request.PostUpdateRequest;
-import com.project.trip.post.model.response.PostResponse;
+import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostUpdateRequestDto;
+import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.print.Pageable;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,11 +19,11 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/posts")
-    public void save(@RequestBody PostSaveRequest postSaveRequest) {
-        //TODO 이미지 List 받기
+    public void save(@RequestBody PostSaveRequestDto postSaveRequestDto) {
+        //TODO 이미지 설정 @RequestPart("images") List<MultipartFile> images
         //TODO userId 설정
-        postService.save(postSaveRequest, 0L);
-
+        //TODO 이미지 저장 경로 설정
+        postService.save(postSaveRequestDto, 0L);
     }
 
     @DeleteMapping("/posts/{postId}")
@@ -30,8 +32,8 @@ public class PostController {
     }
 
     @PutMapping("/posts/{postId}")
-    public void update(@RequestBody PostUpdateRequest postUpdateRequest, @PathVariable Long postId) {
-        postService.update(postUpdateRequest, postId);
+    public void update(@RequestBody PostUpdateRequestDto postUpdateRequestDto, @PathVariable Long postId) {
+        postService.update(postUpdateRequestDto, postId);
     }
 
     @PostMapping("/posts/{postsId}")
@@ -40,7 +42,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public PostResponse searchById(@PathVariable Long postId) {
+    public PostResponseDto searchById(@PathVariable Long postId) {
         return postService.searchById(postId);
     }
 
