@@ -18,7 +18,8 @@ public class SecurityConfig {
                     .anyRequest().permitAll();
         
         //TODO Oauth2.0 설정추가
-        //TODO Login, Logout path 설정
+        //TODO Oauth2.0 후처리 이벤트 클래스 생성 Oauth2UserService 상속 후 loadUser를 통해 처리
+        //TODO Logout path 설정
         return http.build();
     }
 }

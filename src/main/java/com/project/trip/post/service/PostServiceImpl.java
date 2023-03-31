@@ -1,6 +1,5 @@
 package com.project.trip.post.service;
 
-import com.project.trip.post.entity.Normal;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;

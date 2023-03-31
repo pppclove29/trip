@@ -3,7 +3,7 @@ package com.project.trip.post.controller;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
-import com.project.trip.post.service.PostService;
+import com.project.trip.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +16,14 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    private final PostService postService;
+    private final PostServiceImpl postService;
 
     @PostMapping("/posts")
-    public void save(@RequestBody PostSaveRequestDto postSaveRequestDto) {
-        //TODO 이미지 설정 @RequestPart("images") List<MultipartFile> images
-        //TODO userId 설정
+    public void save(@RequestPart("request") PostSaveRequestDto postSaveRequestDto) {
+        //TODO 이미지 설정
+        //TODO userId 어떻게 받아올것인지 결정
         //TODO 이미지 저장 경로 설정
+        //TODO kind(string) -> PostKind(enum) 으로 가공
         postService.save(postSaveRequestDto, 0L);
     }
 

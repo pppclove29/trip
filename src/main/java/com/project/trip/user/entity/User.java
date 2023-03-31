@@ -18,9 +18,15 @@ public class User {
     @Column(name = "USER_ID", nullable = false)
     private Long id;
 
-    //TODO
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+
+    private String name;
+    private String password;
+    private String phoneNumber;
+    private String email;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     //method
     public void addPost(Post post) {

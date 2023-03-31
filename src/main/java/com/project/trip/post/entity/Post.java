@@ -1,5 +1,6 @@
 package com.project.trip.post.entity;
 
+import com.project.trip.image.entity.Image;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.user.entity.User;
@@ -8,22 +9,16 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn
 @Entity
 public class Post {
     protected Post() { /* 생성자 숨김 */ }
 
-    public static Post fromDto(PostSaveRequestDto postSaveRequestDto) {
-        Post post = null;
+    public static Post fromDto(PostSaveRequestDto postSaveRequestDto){
+        Post post = new Post();
 
-        switch (postSaveRequestDto.getKind()) {
-            case NORMAL -> post = new Normal();
-            case NOTICE -> post = new Notice();
-            default -> { /*TODO throw error*/ }
-        }
         post.title = postSaveRequestDto.getTitle();
         post.content = postSaveRequestDto.getContent();
 
@@ -35,14 +30,17 @@ public class Post {
     @Column(name = "POST_ID", nullable = false)
     private Long id;
 
-    protected String title;
-    protected String content;
+    private String title;
+    private String content;
+    @Enumerated(EnumType.STRING)
+    private PostKind kind;
 
     @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
-    protected User writer;
+    private User writer;
 
-    //TODO 이미지 엔티티 추가 private List<String> imagesUrl;
+    @OneToMany(mappedBy = "sid")
+    private List<Image> imagesUrl;
 
     @CreatedDate
     private LocalDateTime writtenDate;
