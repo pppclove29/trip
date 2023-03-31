@@ -3,7 +3,6 @@ package com.project.trip.user.entity;
 import com.project.trip.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.Fetch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +18,12 @@ public class User {
     @Column(name = "USER_ID", nullable = false)
     private Long id;
 
-    //TODO cascade 설정
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //TODO
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
     //method
-    public void addPost(Post post){
+    public void addPost(Post post) {
         posts.add(post);
     }
 }
