@@ -4,8 +4,10 @@ import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,13 +15,17 @@ import java.awt.print.Pageable;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RestController
+@Controller
 public class PostController {
 
     private final PostServiceImpl postService;
 
+    @GetMapping("/posts")
+    public String view(){
+        return "write";
+    }
     @PostMapping("/posts")
-    public void save(@RequestPart("request") PostSaveRequestDto postSaveRequestDto) {
+    public void save(@ModelAttribute PostSaveRequestDto postSaveRequestDto, @RequestParam("images") List<MultipartFile> images) {
         //TODO 이미지 설정
         //TODO userId 어떻게 받아올것인지 결정
         //TODO 이미지 저장 경로 설정

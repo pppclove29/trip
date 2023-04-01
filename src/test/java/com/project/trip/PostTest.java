@@ -40,9 +40,6 @@ public class PostTest {
 
     @BeforeEach
     public void init() {
-        User user = new User();
-
-        userRepository.save(user);
     }
 
     @AfterEach

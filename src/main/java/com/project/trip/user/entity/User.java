@@ -1,6 +1,7 @@
 package com.project.trip.user.entity;
 
 import com.project.trip.post.entity.Post;
+import com.project.trip.user.model.request.UserSaveRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -11,8 +12,15 @@ import java.util.List;
 @Getter
 @Entity
 public class User {
+    protected User(){/*생성자 숨김*/}
+    public static User fromDto(UserSaveRequestDto userSaveRequestDto){
+       User user = new User();
 
-    //attribute
+       user.name = userSaveRequestDto.getName();
+       user.email = userSaveRequestDto.getEmail();
+
+       return user;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "USER_ID", nullable = false)
@@ -25,10 +33,10 @@ public class User {
     private String password;
     private String phoneNumber;
     private String email;
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
-    //method
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.ROLE_USER;
+
     public void addPost(Post post) {
         posts.add(post);
     }

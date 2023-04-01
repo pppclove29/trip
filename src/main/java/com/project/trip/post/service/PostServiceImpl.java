@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService {
         user.addPost(post);
         
         //TODO Image저장
-        //TODO Image - Post 간 관계 지정
+        //TODO Image - Post 관계 설정
 
         postRepository.save(post);
     }

@@ -11,6 +11,5 @@ public class PostSaveRequestDto {
     private String title;
     private String content;
     private PostKind kind;
-    private List<MultipartFile> images;
 }
 
