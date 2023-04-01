@@ -14,10 +14,11 @@ public class Image {
         Image image = new Image();
 
         //TODO userImage
+        return null;
     }
 
     public static Image fromPostImage() {
-
+        return null;
     }
 
     @Id
