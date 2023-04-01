@@ -2,7 +2,7 @@
 
 <body id="page-top">
   <!-- Navigation-->
-  <%@include file="/include/header.jsp" %>
+  <%@include file="include/header.jsp" %>
 
   <!-- Basic features section-->
   <section class="bg-light">
@@ -21,5 +21,5 @@
     </div>
   </section>
   
-  <%@include file="/include/footer.jsp" %>
+  <%@include file="include/footer.jsp" %>
 </body>

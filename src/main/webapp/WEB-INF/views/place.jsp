@@ -74,7 +74,7 @@
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
-    <script src="js/place.js"></script>
+    <script src="../../../resources/static/js/place.js"></script>
     <script
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=21f00fce1faf40a4d24c1144e0b4039c&libraries=services,clusterer,drawing"
