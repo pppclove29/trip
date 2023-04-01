@@ -4,23 +4,26 @@ import com.project.trip.plan.model.request.PlanSaveRequest;
 import com.project.trip.plan.service.PlanServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
 
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping("/plans")
 public class PlanController {
 
     PlanServiceImpl planService;
     @GetMapping
-    public void show(){
+    public String show(){
 
+        return "plan";
     }
     @PostMapping
     public void save(@RequestBody @Valid PlanSaveRequest planSaveRequest){
         // 세션에서 로그인 유저 정보 받아온다.
+
         planService.save(planSaveRequest,"id");
     }
     @GetMapping("/{planId}")
@@ -34,4 +37,5 @@ public class PlanController {
     }
     @PutMapping("/{planId}")
     public void update(@PathVariable int planId, @RequestBody PlanSaveRequest planSaveRequest){}
+
 }

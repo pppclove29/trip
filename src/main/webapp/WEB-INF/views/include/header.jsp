@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}" />
  <meta charset="utf-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -12,6 +11,7 @@
    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
    rel="stylesheet"
  />
+
  <!-- Google fonts-->
  <link rel="preconnect" href="https://fonts.gstatic.com" />
  <link
@@ -27,8 +27,8 @@
    rel="stylesheet"
  />
  <!-- Core theme CSS (includes Bootstrap)-->
- <link href="css/styles.css" rel="stylesheet" />
- <link href="css/style.css" rel="stylesheet" />
+ <link href="../../../resources/static/css/styles.css" rel="stylesheet" />
+ <link href="../../../resources/static/css/style.css" rel="stylesheet" />
  
 <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" id="mainNav">
   <div class="container px-5">
@@ -363,8 +363,8 @@
   <!-- Bootstrap core JS-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Core theme JS-->
-  <script src="js/scripts.js"></script>
-  <script type="text/javascript" src="js/main.js"></script>
+  <script src="../../../../resources/static/js/scripts.js"></script>
+  <script type="text/javascript" src="../../../../resources/static/js/main.js"></script>
   <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
   <!-- 마이페이지 끝-->
 

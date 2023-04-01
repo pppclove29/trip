@@ -2,7 +2,7 @@
 
 <body id="page-top">
   <!-- Navigation-->
-  <%@include file="/include/header.jsp" %>
+  <%@include file="include/header.jsp" %>
   <div class="container mt-5 p-5">
             <div class="row">
                 <div class="col md-8">
@@ -187,8 +187,8 @@
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
+        <script src="../../../resources/static/js/scripts.js"></script>
+        <script type="text/javascript" src="../../../resources/static/js/main.js"></script>
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <!-- * *                               SB Forms JS                               * *-->
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->

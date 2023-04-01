@@ -3,7 +3,7 @@
 <body id="page-top overflow:auto">
     
     <!-- Navigation-->
-    <%@include file="/include/header.jsp" %>
+    <%@include file="include/header.jsp" %>
     
     <!-- Mashead header-->
     <header class="masthead">
@@ -98,12 +98,12 @@
     <!-- carousel end -->
 
     <!-- Footer-->
-	<%@include file="/include/footer.jsp" %>
+	<%@include file="include/footer.jsp" %>
 
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
-    <script src="js/hotplace.js"></script>
+    <script src="../../../resources/static/js/hotplace.js"></script>
     <script
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=21f00fce1faf40a4d24c1144e0b4039c&libraries=services,clusterer,drawing"
