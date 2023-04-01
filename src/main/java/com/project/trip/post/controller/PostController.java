@@ -43,14 +43,14 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public PostResponseDto searchById(@PathVariable Long postId) {
-        return postService.searchById(postId);
+    public PostResponseDto getPostById(@PathVariable Long postId) {
+        return postService.getPostById(postId);
     }
 
     @GetMapping("/board/{boardKind}")
-    public void searchByBoard(@PathVariable String boardKind, @PageableDefault Pageable pageable) {
+    public void getSimplePostsByKind(@PathVariable String boardKind, @PageableDefault Pageable pageable) {
         //TODO page 디폴트 설정
-        postService.searchByBoard(boardKind, pageable);
+        postService.getSimplePostsByKind(boardKind, pageable);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

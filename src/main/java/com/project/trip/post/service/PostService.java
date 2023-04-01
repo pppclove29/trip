@@ -47,7 +47,7 @@ public interface PostService {
      * @param postId 열람할 게시글 ID
      * @return 게시글 세부 정보(PostResponse)
      */
-    PostResponseDto searchById(Long postId);
+    PostResponseDto getPostById(Long postId);
 
     /**
      * 게시판 종류에 따른 게시글 리스트 표시
@@ -56,7 +56,7 @@ public interface PostService {
      * @param pageable  표시할 페이지 정보
      * @return 게시글 리스트(List<PostSimpleResponse>)
      */
-    List<PostSimpleResponseDto> searchByBoard(String boardKind, Pageable pageable);
+    List<PostSimpleResponseDto> getSimplePostsByKind(String boardKind, Pageable pageable);
 
     /**
      * 게시판 ID에 알맞은 게시판을 Entity로 반환

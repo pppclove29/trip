@@ -16,7 +16,7 @@ import java.util.List;
 public class Post {
     protected Post() { /* 생성자 숨김 */ }
 
-    public static Post fromDto(PostSaveRequestDto postSaveRequestDto){
+    public static Post fromDto(PostSaveRequestDto postSaveRequestDto) {
         Post post = new Post();
 
         post.title = postSaveRequestDto.getTitle();
@@ -50,8 +50,8 @@ public class Post {
 
 
     public void update(PostUpdateRequestDto postUpdateRequestDto) {
-        this.title = postUpdateRequestDto.getTitle();
-        this.content = postUpdateRequestDto.getContent();
+        title = postUpdateRequestDto.getTitle();
+        content = postUpdateRequestDto.getContent();
     }
 
     public void star() {

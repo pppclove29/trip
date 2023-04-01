@@ -33,6 +33,9 @@ public class PostServiceImpl implements PostService {
         //좋은 방식인가? 한쪽에서 몰아서 하는게 좋을까?
         post.setWriter(user);
         user.addPost(post);
+        
+        //TODO Image저장
+        //TODO Image - Post 간 관계 지정
 
         postRepository.save(post);
     }
@@ -53,12 +56,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto searchById(Long postId) {
+    public PostResponseDto getPostById(Long postId) {
         return PostResponseDto.fromEntity(findPostById(postId));
     }
 
     @Override
-    public List<PostSimpleResponseDto> searchByBoard(String boardKind, Pageable pageable) {
+    public List<PostSimpleResponseDto> getSimplePostsByKind(String boardKind, Pageable pageable) {
         //TODO list = repo.findByBoardKind
         //TODO list<entity> to list<dto> with stream
         //TODO return list
