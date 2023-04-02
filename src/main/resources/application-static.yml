@@ -1,5 +1,5 @@
 file:
   image:
     path:
-      user: /resources/static/user
-      post: /resources/static/post
+      user: src/main/resources/static/image/user/
+      post: src/main/resources/static/image/post/

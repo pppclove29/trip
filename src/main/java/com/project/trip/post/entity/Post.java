@@ -1,6 +1,6 @@
 package com.project.trip.post.entity;
 
-import com.project.trip.image.entity.Image;
+import com.project.trip.image.entity.PostImage;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.user.entity.User;
@@ -39,8 +39,8 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     private User writer;
 
-    @OneToMany(mappedBy = "sid")
-    private List<Image> imagesUrl;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostImage> images;
 
     @CreatedDate
     private LocalDateTime writtenDate;

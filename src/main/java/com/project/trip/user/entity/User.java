@@ -30,7 +30,6 @@ public class User {
     private List<Post> posts = new ArrayList<>();
 
     private String name;
-    private String password;
     private String phoneNumber;
     private String email;
 

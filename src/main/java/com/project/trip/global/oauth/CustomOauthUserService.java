@@ -12,22 +12,30 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @Service
 public class CustomOauthUserService extends DefaultOAuth2UserService {
     private final UserServiceImpl userService;
-    private final UserImageServiceImpl imageService;
+    private final UserImageServiceImpl userImageService;
+
+    String email;
+    String imageUrl;
 
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        String email = oAuth2User.getAttribute("email");
+
+        email = oAuth2User.getAttribute("email");
+        imageUrl = oAuth2User.getAttribute("picture");
 
         if (userService.checkMemberByEmail(email)) {
             updateUser();
         } else {
             registerUser(oAuth2User);
+            saveUserImage();
         }
 
         User user = userService.getUserByEmail(email);
@@ -44,8 +52,14 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
         System.out.println("첫 회원입니다");
         //TODO 최초 회원가입 로그인 -> 전화번호 등 필요한 정보 별도 입력
         userService.save(UserSaveRequestDto.fromOauthUser(oAuth2User));
+    }
 
-        //TODO 이미지 처리
-        System.out.println((String) oAuth2User.getAttribute("picture"));
+    public void saveUserImage() {
+        try {
+            userImageService.saveImageToServer(imageUrl, email);
+            userImageService.saveImageToDB(email);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 }

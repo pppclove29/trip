@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkMemberByEmail(String email){
+    public boolean checkMemberByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 }
