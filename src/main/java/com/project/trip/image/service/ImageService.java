@@ -15,7 +15,9 @@ public interface ImageService {
 
     List<Image> getImage(Long sid);
 
-    String saveImageToServer(String imageUrl, String email) throws IOException;
+    void saveImage();
+
+    void saveImageToServer(String imageUrl, String email) throws IOException;
 
     void saveImageToDB(String email);
 

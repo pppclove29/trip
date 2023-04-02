@@ -29,18 +29,22 @@ public class PostImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String saveImageToServer(String imageUrl, String email) throws IOException {
-        String totalPath = imagePath + email + "/image.jpg";
-        System.out.println(imagePath);
+    public void saveImage() {
+
+    }
+
+
+    @Override
+    public void saveImageToServer(String imageUrl, String email) throws IOException {
+        String totalPath = imagePath + email + "/picture.jpg";
 
         File file = new File(totalPath);
+        file.mkdirs();
 
         URL url = new URL(imageUrl);
         BufferedImage image = ImageIO.read(url);
 
         ImageIO.write(image, "jpg", file);
-
-        return totalPath;
     }
 
     @Override

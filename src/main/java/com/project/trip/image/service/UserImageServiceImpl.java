@@ -32,19 +32,16 @@ public class UserImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String saveImageToServer(String imageUrl, String email) throws IOException {
+    public void saveImageToServer(String imageUrl, String email) throws IOException {
         String totalPath = imagePath + email + "/picture.jpg";
-        System.out.println(totalPath);
 
         File file = new File(totalPath);
-        System.out.println(file.mkdirs());
+        file.mkdirs();
 
         URL url = new URL(imageUrl);
         BufferedImage image = ImageIO.read(url);
 
         ImageIO.write(image, "jpg", file);
-
-        return totalPath;
     }
 
     @Override
