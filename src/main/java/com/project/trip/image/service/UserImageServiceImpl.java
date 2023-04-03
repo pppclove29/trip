@@ -22,36 +22,13 @@ import java.util.List;
 @Service
 public class UserImageServiceImpl implements ImageService {
     @Value("${file.image.path.user}")
-    private String imagePath;
+    private String userImageSavePath;
     private final UserImageRepository imageRepository;
     private final UserServiceImpl userService;
 
     @Override
     public List<Image> getImage(Long sid) {
         return null;
-    }
-
-    @Override
-    public void saveImageToServer(String imageUrl, String email) throws IOException {
-        String totalPath = imagePath + email + "/picture.jpg";
-
-        File file = new File(totalPath);
-        file.mkdirs();
-
-        URL url = new URL(imageUrl);
-        BufferedImage image = ImageIO.read(url);
-
-        ImageIO.write(image, "jpg", file);
-    }
-
-    @Override
-    public void saveImageToDB(String email) {
-        User user = userService.getUserByEmail(email);
-
-        String totalPath = imagePath + email + "/picture.jpg";
-        UserImage userImage = UserImage.fromUserImagePath(totalPath, user);
-
-        imageRepository.save(userImage);
     }
 
     @Override
@@ -62,5 +39,34 @@ public class UserImageServiceImpl implements ImageService {
     @Override
     public void delete() {
 
+    }
+
+    public void saveImage(String imageUrl, String email) {
+        try {
+            saveImageToServer(new URL(imageUrl), email);
+            saveImageToDB(email);
+        } catch (IOException e) {
+            //TODO 에러처리
+        }
+    }
+
+    private void saveImageToServer(URL imageUrl, String email) throws IOException {
+        String totalPath = userImageSavePath + email + "/picture.jpg";
+
+        File file = new File(totalPath);
+        file.mkdirs();
+
+        BufferedImage image = ImageIO.read(imageUrl);
+
+        ImageIO.write(image, "jpg", file);
+    }
+
+    private void saveImageToDB(String email) {
+        User user = userService.getUserByEmail(email);
+
+        String totalPath = userImageSavePath + email + "/picture.jpg";
+        UserImage userImage = UserImage.fromUserImagePath(totalPath, user);
+
+        imageRepository.save(userImage);
     }
 }

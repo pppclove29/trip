@@ -15,9 +15,10 @@ public interface PostService {
      * 게시글 등록 정보(postSaveRequest)와 작성자(userId)를 통해 새로운 게시글 생성
      *
      * @param postSaveRequestDto 게시글 등록 정보
-     * @param userId          작성자 ID
+     * @param userId             작성자 ID
+     * @return 저장한 post의 ID
      */
-    void save(PostSaveRequestDto postSaveRequestDto, Long userId);
+    Long save(PostSaveRequestDto postSaveRequestDto, Long userId);
 
     /**
      * 게시글 ID를 통해 해당 게시글 삭제
@@ -30,7 +31,7 @@ public interface PostService {
      * 게시글 수정 정보(postUpdateRequest)룰 통해 특정 게시글을 수정
      *
      * @param postUpdateRequestDto 게시글 수정 정보
-     * @param postId            수정할 게시글 ID
+     * @param postId               수정할 게시글 ID
      */
     void update(PostUpdateRequestDto postUpdateRequestDto, Long postId);
 

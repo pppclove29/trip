@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
-    public void save(PostSaveRequestDto postSaveRequestDto, Long userId) {
+    public Long save(PostSaveRequestDto postSaveRequestDto, Long userId) {
         //TODO user = findUserById
         User user = userRepository.findAll().get(0);//temp
 
@@ -33,11 +33,10 @@ public class PostServiceImpl implements PostService {
         //좋은 방식인가? 한쪽에서 몰아서 하는게 좋을까?
         post.setWriter(user);
         user.addPost(post);
-        
-        //TODO Image저장
-        //TODO Image - Post 관계 설정
 
         postRepository.save(post);
+
+        return post.getId();
     }
 
     @Override
