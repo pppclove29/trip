@@ -5,6 +5,7 @@ import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.UserSaveRequestDto;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.h2.engine.Session;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
