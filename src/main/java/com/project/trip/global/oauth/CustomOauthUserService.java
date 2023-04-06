@@ -27,6 +27,9 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println(userRequest.getAccessToken().getTokenValue());
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         email = oAuth2User.getAttribute("email");
