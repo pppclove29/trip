@@ -42,6 +42,7 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
             userImageService.saveImage(imageUrl, email);
         }
 
+        //TODO Session 등록
         User user = userService.getUserByEmail(email);
 
         return new CustomOauthUser(user);
