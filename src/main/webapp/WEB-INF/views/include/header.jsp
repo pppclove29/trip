@@ -76,7 +76,7 @@
       <form method="GET" action="${root}/user">
       <input type="hidden" name="action" value="logout">
         <button
-        class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0 mx-2 ">
+        class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0 mx-2 logout-btn">
         <span class="d-flex align-items-center">
           <i class="bi-chat-text-fill me-2"></i>
           <span class="small">LOGOUT</span>
@@ -84,7 +84,7 @@
       </button>
       </form>
       <button
-        class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0 mx-2 "
+        class="btn btn-primary rounded-pill px-3 mb-2 mb-lg-0 mx-2 mypage-btn"
         data-bs-toggle="modal"
         data-bs-target="#mypageModal">
         <span class="d-flex align-items-center">
@@ -364,8 +364,8 @@
   <!-- Bootstrap core JS-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Core theme JS-->
-  <script src="../../../../resources/static/js/scripts.js"></script>
-  <script type="text/javascript" src="../../../../resources/static/js/main.js"></script>
+  <script src="../../../resources/static/js/scripts.js"></script>
+  <script type="text/javascript" src="../../../resources/static/js/main.js"></script>
   <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
   <!-- 마이페이지 끝-->
 

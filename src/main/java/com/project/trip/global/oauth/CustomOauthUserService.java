@@ -5,6 +5,7 @@ import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.UserSaveRequestDto;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.h2.engine.Session;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -26,6 +27,9 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println(userRequest.getAccessToken().getTokenValue());
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         email = oAuth2User.getAttribute("email");
@@ -38,6 +42,7 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
             userImageService.saveImage(imageUrl, email);
         }
 
+        //TODO Session 등록
         User user = userService.getUserByEmail(email);
 
         return new CustomOauthUser(user);

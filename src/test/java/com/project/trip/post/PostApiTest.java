@@ -1,4 +1,4 @@
-package com.project.trip;
+package com.project.trip.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.trip.post.entity.Post;
@@ -9,17 +9,22 @@ import com.project.trip.user.entity.User;
 import com.project.trip.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -28,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-public class PostTest {
+public class PostApiTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -44,24 +49,25 @@ public class PostTest {
 
     @AfterEach
     public void clear() {
-
     }
 
+    @DisplayName("이미지를 포함한 게시글 등록 성공 테스트")
     @WithMockUser()
     @Test
-    public void 일반_유저_정상적인_게시글_등록() throws Exception {
-        PostSaveRequestDto dto = new PostSaveRequestDto();
-        dto.setTitle("제목");
-        dto.setContent("내용");
-        dto.setKind(PostKind.NORMAL);
+    public void successPostSaveWithImages() throws Exception {
+        //given
+        PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NORMAL);
 
-        mockMvc.perform(post("/posts")
-                        .content(objectMapper.writeValueAsString(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+        MockMultipartFile image1 = imageFromLocal(1);
+        MockMultipartFile image2 = imageFromLocal(2);
+
+
+        //when
+        mockMvc.perform(multipart("/posts")
+                        .file(image1)
+                        .file(image2)
+                        .flashAttr("postSaveRequest",dto))
                 .andExpect(status().isOk());
-
-        List<Post> post = postRepository.findAll();
-        System.out.println(post.size());
     }
 
     @WithMockUser()
@@ -189,5 +195,23 @@ public class PostTest {
     @Test
     public void 존재하지_않는_게시판_열람() {
 
+    }
+
+    PostSaveRequestDto makePostSaveRequestDto(String title, String content, PostKind postKind) {
+        PostSaveRequestDto dto = new PostSaveRequestDto();
+        dto.setTitle(title);
+        dto.setContent(content);
+        dto.setKind(postKind);
+
+        return dto;
+    }
+    MockMultipartFile imageFromLocal(int imageIdx) throws IOException {
+        String imagePath ="src/test/resources/static/post/image";
+
+        return new MockMultipartFile(
+                "images",
+                "image"+imageIdx+".jpg",
+                "image/jpg",
+                new FileInputStream(imagePath + imageIdx +".jpg"));
     }
 }
