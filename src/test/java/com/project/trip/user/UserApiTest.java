@@ -3,16 +3,20 @@ package com.project.trip.user;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.global.oauth.CustomOauthUserService;
 import com.project.trip.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,5 +63,20 @@ public class UserApiTest {
         customOauthUserService.loadUser(mock(OAuth2UserRequest.class));
 
         verify(customOauthUserService, times(1)).loadUser(any(OAuth2UserRequest.class));
+    }
+    @Test
+    void loginPage() throws Exception{
+        MvcResult result = this.mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+    @Test
+    @WithMockUser(username = "guest", roles = {"GUEST"})
+    void login() throws Exception{
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertThat(authentication).isNotNull();
+        assertThat(authentication.isAuthenticated()).isTrue();
+
     }
 }
