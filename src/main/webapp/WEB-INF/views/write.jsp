@@ -7,49 +7,57 @@
    <div
             class="mt-5 pt-5 d-flex justify-content-center align-content-center"
         >
-
-       <!-- new plan (modal) -->
-       <div class="modal" id="myModal">
-           <div class="modal-dialog modal-dialog-centered">
-               <div class="modal-content">
-                   <!-- Modal Header -->
-                   <div class="modal-header">
-                       <h4 class="modal-title">Register new plan</h4>
-                       <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                   </div>
-
-                   <!-- Modal body -->
-                   <div class="modal-body">
-                       <form action="http://localhost:8080/posts" method="post" enctype="multipart/form-data">
-                           <div class="input-group">
-                               <div class="custom-file my-2">
-                                   <input
-                                           type="file"
-                                           class="custom-file-input"
-                                           id="inputGroupFile02"
-                                           name="images"
-                                           accept="image/png, image/jpeg, image/jpg"
-                                           multiple
-                                   />
-                               </div>
-                           </div>
-                           <div class="mb-3">
-                               <label for="recipient-name" class="col-form-label">장소:</label>
-                               <input type="text" class="form-control" id="recipient-name" name="title" />
-                           </div>
-                           <div class="mb-3">
-                               <label for="message-text" class="col-form-label">계획:</label>
-                               <textarea class="form-control" id="message-text" name="content"></textarea>
-                           </div>
-                           <!-- Modal footer -->
-                           <div class="modal-footer">
-                               <button type="submit" class="btn btn-light" data-bs-dismiss="modal">Regist</button>
-                           </div>
-                       </form>
-                   </div>
-               </div>
-           </div>
-       </div>
+            <form class="row border-0 w-50 mt-5" id="contactForm" method="POST" action="${root}/post">
+                <h2 class="mb-5 text-center display-4 lh-1">Write</h2>
+                    <!-- Name input-->
+                    <div class="form-floating mb-3">
+                        <input
+                            class="form-control"
+                            id="id"
+                            name="title"
+                            type="text"
+                            placeholder="Enter your name..."
+                            data-sb-validations="required"
+                        />
+                        <label for="title">Title</label>
+                        
+                    </div>
+                    <!-- Message input-->
+                    <div class="form-floating mb-3">
+                        <textarea
+                            class="form-control"
+                            id="message"
+                            name="contents"
+                            type="text"
+                            placeholder="Enter your message here..."
+                            style="height: 10rem"
+                            data-sb-validations="required"
+                        ></textarea>
+                        <label for="message">Contents</label>
+                        <div
+                            class="invalid-feedback"
+                            data-sb-feedback="message:required"
+                        >
+                            A message is required.
+                        </div>
+                    </div>
+                    <!-- Submit success message-->
+                    <!---->
+                    <!-- This is what your users will see when the form-->
+                    <!-- has successfully submitted-->
+ 
+                    <!-- Submit Button-->
+                    <div class="d-grid">
+                    <input type="hidden" name="action" value="">
+                        <button
+                            class="btn btn-primary rounded-pill btn-lg "
+                            id="submitButton"
+                            type="submit"
+                        >
+                            SUBMIT
+                        </button>
+                    </div>
+            </form>
         </div>
         <!--조인 끝-->
         <!-- Bootstrap core JS-->
