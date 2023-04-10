@@ -1,9 +1,12 @@
 package com.project.trip.user.entity;
 
+import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
-import com.project.trip.user.model.request.UserSaveRequestDto;
+import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +15,30 @@ import java.util.List;
 @Getter
 @Entity
 public class User {
-    protected User(){/*생성자 숨김*/}
-    public static User fromDto(UserSaveRequestDto userSaveRequestDto){
-       User user = new User();
-
-       user.name = userSaveRequestDto.getName();
-       user.email = userSaveRequestDto.getEmail();
-
-       return user;
+    protected User() {
     }
+
+    public static User of(AdditionInfoUserSaveRequestDto additionInfoUserSaveRequestDto, CustomOauthUser oAuth2User) {
+        User user = new User();
+
+        user.phoneNumber = additionInfoUserSaveRequestDto.getPhoneNumber();
+        user.role = Role.USER;
+
+        user.name = oAuth2User.getUsername();
+        user.email = oAuth2User.getEmail();
+
+        return user;
+    }
+
+    public static User getTempUser(OAuth2User oAuth2User) {
+        User user = new User();
+        user.role = Role.TEMP;
+        user.name = oAuth2User.getAttribute("name");
+        user.email = oAuth2User.getAttribute("email");
+
+        return user;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "USER_ID", nullable = false)
@@ -34,7 +52,7 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.ROLE_USER;
+    private Role role;
 
     public void addPost(Post post) {
         posts.add(post);

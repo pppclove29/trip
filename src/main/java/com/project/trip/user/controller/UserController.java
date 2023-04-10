@@ -1,23 +1,31 @@
 package com.project.trip.user.controller;
 
-import org.springframework.http.ResponseEntity;
+import com.project.trip.global.oauth.CustomOauthUser;
+import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
+import com.project.trip.user.service.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+@RequestMapping("/users")
+@RequiredArgsConstructor
 @Controller
 public class UserController {
-    private RestTemplate restTemplate = new RestTemplate();
 
-    @GetMapping("/external-api")
-    public String callExternalApi() {
-        String apiUrl = "https://accounts.google.com/.well-known/openid-configuration";
-        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-        String responseBody = response.getBody();
+    private final UserServiceImpl userService;
 
-        System.out.println(responseBody);
+    @GetMapping
+    public String temp(){
+        return "userSave";
+    }
+    @PostMapping
+    public String save(AdditionInfoUserSaveRequestDto additionInfoUserSaveRequestDto,
+                       @AuthenticationPrincipal CustomOauthUser user){
+        userService.save(additionInfoUserSaveRequestDto, user);
 
-        // 외부 API 응답 처리 로직
-        return responseBody;
+        return "index";
     }
 }

@@ -1,24 +1,40 @@
 package com.project.trip.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.trip.global.oauth.CustomOauthUser;
+import com.project.trip.post.controller.PostController;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.entity.PostKind;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.repository.PostRepository;
+import com.project.trip.post.service.PostServiceImpl;
+import com.project.trip.user.MockUser;
+import com.project.trip.user.entity.Role;
 import com.project.trip.user.entity.User;
+import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import com.project.trip.user.repository.UserRepository;
+import com.project.trip.user.service.UserServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,82 +42,109 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 public class PostApiTest {
+
+    @InjectMocks
+    PostController postController;
+    @Mock
+    UserServiceImpl userService;
+    @Mock
+    PostRepository postRepository;
+    @Mock
+    PostServiceImpl postService;
+
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    PostRepository postRepository;
     @Autowired
     ObjectMapper objectMapper;
 
     @BeforeEach
     public void init() {
+        CustomOauthUser userDetails = new CustomOauthUser(new MockUser());
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));
+
+        userService.save(new AdditionInfoUserSaveRequestDto(),userDetails);
     }
 
     @AfterEach
     public void clear() {
     }
 
-    @DisplayName("이미지를 포함한 게시글 등록 성공 테스트")
+    @DisplayName("일반 유저 게시글 등록 성공")
     @WithMockUser()
     @Test
-    public void successPostSaveWithImages() throws Exception {
+    public void successPostSaveByUser() throws Exception {
         //given
+        when(userService.getUserByEmail(anyString())).thenReturn(new MockUser());
+
         PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NORMAL);
 
         MockMultipartFile image1 = imageFromLocal(1);
         MockMultipartFile image2 = imageFromLocal(2);
 
-
         //when
         mockMvc.perform(multipart("/posts")
                         .file(image1)
                         .file(image2)
-                        .flashAttr("postSaveRequest",dto))
+                        .flashAttr("postSaveRequest", dto))
                 .andExpect(status().isOk());
+
+        verify((userService), times(1)).getUserByEmail(anyString());
     }
 
-    @WithMockUser()
+    @DisplayName("관리자 게시글 등록 성공")
+    @WithMockUser(roles = "ADMIN")
     @Test
-    public void 관리자_정상적인_게시글_등록() {
+    public void successPostSaveByAdmin() {
 
     }
 
+    @DisplayName("익명 유저 게시글 등록 에러")
     @WithAnonymousUser
     @Test
-    public void 비로그인_유저_게시글_등록() {
+    public void errorPostSaveWithImagesByAnonymousUser() {
 
     }
 
+    @DisplayName("일반 유저 공지글 등록 에러")
+    @WithMockUser(roles = "USER")
     @Test
-    public void 일반_유저_공지글_등록() {
+    public void errorNoticePostSaveByUser() {
 
     }
 
+    @DisplayName("관리자 공지글 등록 성공")
+    @WithMockUser(roles = "ADMIN")
     @Test
-    public void 관리자_공지글_등록() {
+    public void successNoticePostSaveByAdmin() {
 
     }
 
+    @DisplayName("익명 유저 공지글 등록 에러")
+    @WithAnonymousUser
     @Test
-    public void 비로그인_유저_공지글_등록() {
+    public void errorNoticePostSaveByAnonymousUser() {
 
     }
 
+    @DisplayName("일반 유저 자신 게시글 삭제 성공")
+    @WithMockUser(roles = "USER")
     @Test
-    public void 유저가_자신의_글_정상적_삭제() {
+    public void successOwnPostDeleteByUser() {
 
     }
 
+    @DisplayName("관리자 일반 유저의 게시글 삭제 성공")
     @Test
     public void 관리자가_특정_유저의_글을_정상적_삭제() {
 
@@ -205,13 +248,14 @@ public class PostApiTest {
 
         return dto;
     }
+
     MockMultipartFile imageFromLocal(int imageIdx) throws IOException {
-        String imagePath ="src/test/resources/static/post/image";
+        String imagePath = "src/test/resources/static/post/image";
 
         return new MockMultipartFile(
                 "images",
-                "image"+imageIdx+".jpg",
+                "image" + imageIdx + ".jpg",
                 "image/jpg",
-                new FileInputStream(imagePath + imageIdx +".jpg"));
+                new FileInputStream(imagePath + imageIdx + ".jpg"));
     }
 }

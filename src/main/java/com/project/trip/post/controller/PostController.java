@@ -1,5 +1,6 @@
 package com.project.trip.post.controller;
 
+import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.model.request.PostSaveRequestDto;
@@ -9,6 +10,7 @@ import com.project.trip.post.service.PostServiceImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +34,10 @@ public class PostController {
 
     @PostMapping("/posts")
     public void save(@ModelAttribute PostSaveRequestDto postSaveRequestDto,
-                     @RequestParam("images") List<MultipartFile> images) throws IOException {
-        //TODO userId 어떻게 받아올것인지 결정
+                     @RequestParam("images") List<MultipartFile> images,
+                     @AuthenticationPrincipal CustomOauthUser user) throws IOException {
         //TODO kind(string) -> PostKind(enum) 으로 가공
-        Long postId = postService.save(postSaveRequestDto, 0L);
+        Long postId = postService.save(postSaveRequestDto, user.getEmail());
 
         postImageService.saveImage(images, postId);
     }

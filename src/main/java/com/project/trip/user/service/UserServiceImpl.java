@@ -1,7 +1,8 @@
 package com.project.trip.user.service;
 
+import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.user.entity.User;
-import com.project.trip.user.model.request.UserSaveRequestDto;
+import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import com.project.trip.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public void save(UserSaveRequestDto userSaveRequestDto) {
-        User user = User.fromDto(userSaveRequestDto);
+    public void save(AdditionInfoUserSaveRequestDto additionInfoUserSaveRequestDto, CustomOauthUser oauthUser) {
+        User user = User.of(additionInfoUserSaveRequestDto,oauthUser);
 
         userRepository.save(user);
     }

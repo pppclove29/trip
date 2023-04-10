@@ -1,6 +1,8 @@
 package com.project.trip.global.oauth;
 
+import com.project.trip.user.entity.Role;
 import com.project.trip.user.entity.User;
+import jdk.jfr.Description;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -12,6 +14,10 @@ import java.util.Map;
 public class CustomOauthUser implements UserDetails, OAuth2User {
 
     private User user;
+
+    public CustomOauthUser(OAuth2User oAuth2User) {
+        this.user = User.getTempUser(oAuth2User);
+    }
 
     public CustomOauthUser(User user) {
         this.user = user;
@@ -25,19 +31,34 @@ public class CustomOauthUser implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> list = new ArrayList<>();
-        list.add((GrantedAuthority) () -> user.getRole().toString());
+        list.add((GrantedAuthority) () -> user.getRole().getRole());
 
         return list;
     }
 
-    @Override
-    public String getPassword() {
-        return null;
+    public Long getId() {
+        return user.getId();
     }
 
     @Override
     public String getUsername() {
         return user.getName();
+    }
+
+    public String getEmail() {
+        return user.getEmail();
+    }
+
+    public String getRedirect() {
+        if (user.getRole() == Role.TEMP)
+            return "/users";
+
+        return "/";
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
     }
 
     @Override
@@ -60,6 +81,8 @@ public class CustomOauthUser implements UserDetails, OAuth2User {
         return true;
     }
 
+    @Deprecated
+    @Description("Use getUserName instead")
     @Override
     public String getName() {
         return null;

@@ -8,6 +8,7 @@ import com.project.trip.post.model.response.PostSimpleResponseDto;
 import com.project.trip.post.repository.PostRepository;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.repository.UserRepository;
+import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +21,12 @@ import java.util.List;
 @Service
 public class PostServiceImpl implements PostService {
 
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
     private final PostRepository postRepository;
 
     @Override
-    public Long save(PostSaveRequestDto postSaveRequestDto, Long userId) {
-        //TODO user = findUserById
-        User user = userRepository.findAll().get(0);//temp
+    public Long save(PostSaveRequestDto postSaveRequestDto, String userEmail) {
+        User user = userService.getUserByEmail(userEmail);
 
         Post post = Post.fromDto(postSaveRequestDto);
 
