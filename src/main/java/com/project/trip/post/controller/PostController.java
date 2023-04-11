@@ -27,6 +27,17 @@ public class PostController {
     private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
 
+    @ResponseBody
+    @GetMapping("/test")
+    public String test(){
+        System.out.println(testMethod());
+
+        return "real response";
+    }
+    public String testMethod(){
+        return "real String";
+    }
+
     @GetMapping("/posts")
     public String view() {
         return "write";

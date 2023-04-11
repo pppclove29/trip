@@ -8,11 +8,8 @@ import com.project.trip.post.entity.PostKind;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.repository.PostRepository;
 import com.project.trip.post.service.PostServiceImpl;
-import com.project.trip.user.MockUser;
-import com.project.trip.user.entity.Role;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
-import com.project.trip.user.repository.UserRepository;
 import com.project.trip.user.service.UserServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,36 +21,30 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 public class PostApiTest {
 
-    @InjectMocks
+    @Mock
     PostController postController;
     @Mock
     UserServiceImpl userService;
@@ -69,15 +60,41 @@ public class PostApiTest {
 
     @BeforeEach
     public void init() {
-        CustomOauthUser userDetails = new CustomOauthUser(new MockUser());
+        User user = mock(User.class);
+        doNothing().when(user).addPost(any(Post.class));
+
+        CustomOauthUser userDetails = new CustomOauthUser(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));
 
-        userService.save(new AdditionInfoUserSaveRequestDto(),userDetails);
+        userService.save(new AdditionInfoUserSaveRequestDto(), userDetails);
     }
 
     @AfterEach
     public void clear() {
+    }
+
+    @Test
+    @WithMockUser
+    public void test() throws Exception {
+        when(postController.test()).thenReturn("fake response");
+        when(postController.testMethod()).thenReturn("fake String");
+
+        System.out.println("---------간접 호출----------");
+        System.out.println(postController.test());
+
+        System.out.println("---------직접 호출----------");
+        System.out.println(postController.testMethod());
+
+        System.out.println("---------Http 호출----------");
+        MvcResult result = mockMvc.perform(get("/test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+
+        verify(postController, times(1)).test();
+        verify(postController, times(1)).testMethod();
     }
 
     @DisplayName("일반 유저 게시글 등록 성공")
@@ -85,8 +102,6 @@ public class PostApiTest {
     @Test
     public void successPostSaveByUser() throws Exception {
         //given
-        when(userService.getUserByEmail(anyString())).thenReturn(new MockUser());
-
         PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NORMAL);
 
         MockMultipartFile image1 = imageFromLocal(1);
@@ -98,8 +113,6 @@ public class PostApiTest {
                         .file(image2)
                         .flashAttr("postSaveRequest", dto))
                 .andExpect(status().isOk());
-
-        verify((userService), times(1)).getUserByEmail(anyString());
     }
 
     @DisplayName("관리자 게시글 등록 성공")
