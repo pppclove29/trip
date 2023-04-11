@@ -10,6 +10,7 @@ import com.project.trip.post.service.PostServiceImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +44,11 @@ public class PostController {
         return "write";
     }
 
+    @Secured({"ROLE_USER","ROLE_ADMIN"})
     @PostMapping("/posts")
-    public void save(@ModelAttribute PostSaveRequestDto postSaveRequestDto,
+    public void save(@ModelAttribute("postSaveRequest") PostSaveRequestDto postSaveRequestDto,
                      @RequestParam("images") List<MultipartFile> images,
                      @AuthenticationPrincipal CustomOauthUser user) throws IOException {
-        //TODO kind(string) -> PostKind(enum) 으로 가공
         Long postId = postService.save(postSaveRequestDto, user.getEmail());
 
         postImageService.saveImage(images, postId);

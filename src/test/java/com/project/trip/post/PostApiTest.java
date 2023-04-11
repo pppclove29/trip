@@ -2,6 +2,7 @@ package com.project.trip.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.trip.global.oauth.CustomOauthUser;
+import com.project.trip.image.repository.PostImageRepository;
 import com.project.trip.post.controller.PostController;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.entity.PostKind;
@@ -10,13 +11,13 @@ import com.project.trip.post.repository.PostRepository;
 import com.project.trip.post.service.PostServiceImpl;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
+import com.project.trip.user.repository.UserRepository;
 import com.project.trip.user.service.UserServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +31,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,6 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
@@ -46,22 +49,26 @@ public class PostApiTest {
 
     @Mock
     PostController postController;
-    @Mock
-    UserServiceImpl userService;
-    @Mock
-    PostRepository postRepository;
-    @Mock
-    PostServiceImpl postService;
 
+    @Autowired
+    PostServiceImpl postService;
+    @Autowired
+    UserServiceImpl userService;
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    PostImageRepository postImageRepository;
+
     @BeforeEach
     public void init() {
         User user = mock(User.class);
-        doNothing().when(user).addPost(any(Post.class));
 
         CustomOauthUser userDetails = new CustomOauthUser(user);
         SecurityContext context = SecurityContextHolder.getContext();

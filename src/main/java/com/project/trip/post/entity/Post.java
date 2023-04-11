@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -40,7 +41,7 @@ public class Post {
     private User writer;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostImage> images;
+    private List<PostImage> images = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime writtenDate;
@@ -65,5 +66,8 @@ public class Post {
 
     public void setWriter(User user) {
         this.writer = user;
+    }
+    public void addPostImage(PostImage postImage){
+        images.add(postImage);
     }
 }
