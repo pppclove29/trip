@@ -9,6 +9,7 @@ import com.project.trip.post.entity.PostKind;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.repository.PostRepository;
 import com.project.trip.post.service.PostServiceImpl;
+import com.project.trip.user.entity.Role;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import com.project.trip.user.repository.UserRepository;
@@ -81,29 +82,6 @@ public class PostApiTest {
     public void clear() {
     }
 
-    @Test
-    @WithMockUser
-    public void test() throws Exception {
-        when(postController.test()).thenReturn("fake response");
-        when(postController.testMethod()).thenReturn("fake String");
-
-        System.out.println("---------간접 호출----------");
-        System.out.println(postController.test());
-
-        System.out.println("---------직접 호출----------");
-        System.out.println(postController.testMethod());
-
-        System.out.println("---------Http 호출----------");
-        MvcResult result = mockMvc.perform(get("/test"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        System.out.println(result.getResponse().getContentAsString());
-
-        verify(postController, times(1)).test();
-        verify(postController, times(1)).testMethod();
-    }
-
     @DisplayName("일반 유저 게시글 등록 성공")
     @WithMockUser()
     @Test
@@ -121,9 +99,21 @@ public class PostApiTest {
                         .flashAttr("postSaveRequest", dto))
                 .andExpect(status().isOk());
     }
+    @DisplayName("일반 유저 이미지 없이 게시글 등록 실패")
+    @WithMockUser()
+    @Test
+    public void errorPostSaveByUserWithOutImages() throws Exception {
+        //given
+        PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NORMAL);
+
+        //when
+        mockMvc.perform(multipart("/posts")
+                        .flashAttr("postSaveRequest", dto))
+                .andExpect(status().is4xxClientError());
+    }
 
     @DisplayName("관리자 게시글 등록 성공")
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "")
     @Test
     public void successPostSaveByAdmin() {
 
@@ -175,7 +165,7 @@ public class PostApiTest {
 
     }
 
-    @Test
+     @Test
     public void 적합하지_않은_문자로_게시글_삭제() {
 
     }

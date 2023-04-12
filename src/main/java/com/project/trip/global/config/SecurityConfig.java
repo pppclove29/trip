@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error").permitAll()
+                .requestMatchers("/admin").hasRole("ROLE_ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .logout()

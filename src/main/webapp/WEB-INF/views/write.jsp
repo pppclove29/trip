@@ -7,7 +7,7 @@
    <div
             class="mt-5 pt-5 d-flex justify-content-center align-content-center"
         >
-            <form class="row border-0 w-50 mt-5" id="contactForm" method="POST" action="${root}/post">
+            <form class="row border-0 w-50 mt-5" id="contactForm" method="POST" action="${root}/posts">
                 <h2 class="mb-5 text-center display-4 lh-1">Write</h2>
                     <!-- Name input-->
                     <div class="form-floating mb-3">

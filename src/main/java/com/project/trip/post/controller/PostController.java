@@ -28,17 +28,6 @@ public class PostController {
     private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
 
-    @ResponseBody
-    @GetMapping("/test")
-    public String test(){
-        System.out.println(testMethod());
-
-        return "real response";
-    }
-    public String testMethod(){
-        return "real String";
-    }
-
     @GetMapping("/posts")
     public String view() {
         return "write";
@@ -47,7 +36,7 @@ public class PostController {
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @PostMapping("/posts")
     public void save(@ModelAttribute("postSaveRequest") PostSaveRequestDto postSaveRequestDto,
-                     @RequestParam("images") List<MultipartFile> images,
+                     @RequestParam(value = "images") List<MultipartFile> images,
                      @AuthenticationPrincipal CustomOauthUser user) throws IOException {
         Long postId = postService.save(postSaveRequestDto, user.getEmail());
 
