@@ -1,20 +1,23 @@
 package com.project.trip.post.service;
 
+import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
+import com.project.trip.post.entity.PostKind;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.model.response.PostSimpleResponseDto;
 import com.project.trip.post.repository.PostRepository;
 import com.project.trip.user.entity.User;
-import com.project.trip.user.repository.UserRepository;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -50,8 +53,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void star(Long postId) {
-        findPostById(postId).star();
+    public void like(Long postId, CustomOauthUser oauthUser) {
+        User user = userService.getUserByEmail(oauthUser.getEmail());
+
+        findPostById(postId).like(user);
     }
 
     @Override
@@ -60,13 +65,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSimpleResponseDto> getSimplePostsByKind(String boardKind, Pageable pageable) {
-        //TODO list = repo.findByBoardKind
-        //TODO list<entity> to list<dto> with stream
-        //TODO return list
+    public List<PostSimpleResponseDto> getNotices() {
+        List<Post> noticeList = postRepository.findTop5Recent();
 
-        return null;
+        return noticeList.stream().map(PostSimpleResponseDto::toDto).toList();
     }
+
+    @Override
+    public List<PostSimpleResponseDto> getBoard(Pageable pageable) {
+        Page<Post> postPage = postRepository.findByKind(PostKind.NORMAL, pageable);
+
+          return postPage.stream().map(PostSimpleResponseDto::toDto).toList();
+    }
+
 
     @Override
     public Post findPostById(Long postId) throws IllegalArgumentException {

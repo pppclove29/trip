@@ -46,7 +46,8 @@ public class Post {
     @CreatedDate
     private LocalDateTime writtenDate;
 
-    private int star = 0;
+    @ManyToMany
+    private List<User> staredUser = new ArrayList<>();
     private int views = 0;
 
 
@@ -55,19 +56,25 @@ public class Post {
         content = postUpdateRequestDto.getContent();
     }
 
-    public void star() {
-        //TODO 이미 추천한 경우 처리
-        star++;
+    public void like(User user) {
+
+        System.out.println("추처 시도");
+        if (staredUser.contains(user))
+            staredUser.remove(user);
+        else
+            staredUser.add(user);
     }
 
     public void raiseView() {
+        //TODO 방식 변경
         views++;
     }
 
     public void setWriter(User user) {
         this.writer = user;
     }
-    public void addPostImage(PostImage postImage){
+
+    public void addPostImage(PostImage postImage) {
         images.add(postImage);
     }
 }

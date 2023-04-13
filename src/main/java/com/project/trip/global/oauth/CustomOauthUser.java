@@ -55,6 +55,9 @@ public class CustomOauthUser implements UserDetails, OAuth2User {
 
         return "/";
     }
+    public Role getRole(){
+        return user.getRole();
+    }
 
     @Override
     public String getPassword() {

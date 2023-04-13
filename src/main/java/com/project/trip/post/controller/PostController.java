@@ -2,27 +2,27 @@ package com.project.trip.post.controller;
 
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
-import com.project.trip.post.entity.Post;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
+import com.project.trip.post.model.response.PostSimpleResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class PostController {
 
     private final PostServiceImpl postService;
@@ -33,12 +33,12 @@ public class PostController {
         return "write";
     }
 
-    @Secured({"ROLE_USER","ROLE_ADMIN"})
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")
     public void save(@ModelAttribute("postSaveRequest") PostSaveRequestDto postSaveRequestDto,
                      @RequestParam(value = "images") List<MultipartFile> images,
-                     @AuthenticationPrincipal CustomOauthUser user) throws IOException {
-        Long postId = postService.save(postSaveRequestDto, user.getEmail());
+                     @AuthenticationPrincipal CustomOauthUser oauthUser) throws IOException {
+        Long postId = postService.save(postSaveRequestDto, oauthUser.getEmail());
 
         postImageService.saveImage(images, postId);
     }
@@ -53,9 +53,10 @@ public class PostController {
         postService.update(postUpdateRequestDto, postId);
     }
 
-    @PostMapping("/posts/{postsId}")
-    public void star(@PathVariable Long postsId) {
-        postService.star(postsId);
+    @PostMapping("/posts/{postsId}/like")
+    public void like(@PathVariable Long postsId,
+                     @AuthenticationPrincipal CustomOauthUser oauthUser) {
+        postService.like(postsId, oauthUser);
     }
 
     @GetMapping("/posts/{postId}")
@@ -63,14 +64,18 @@ public class PostController {
         return postService.getPostById(postId);
     }
 
-    @GetMapping("/board/{boardKind}")
-    public void getSimplePostsByKind(@PathVariable String boardKind, @PageableDefault Pageable pageable) {
-        //TODO page 디폴트 설정
-        postService.getSimplePostsByKind(boardKind, pageable);
+    @GetMapping("/board")
+    public void getBoard(@PathVariable String boardKind,
+                         @PageableDefault(size = 5) Pageable pageable) {
+        List<PostSimpleResponseDto> noticeList = postService.getNotices();
+        List<PostSimpleResponseDto> postList = postService.getBoard(pageable);
+
+        //TODO 위 두 List를 어떻게 반환할지 고민
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public void noPostFound() {
-        //TODO 에러처리
+    public ResponseEntity<?> handleMethodNoPostFoundException(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("no posts founded");
     }
 }
