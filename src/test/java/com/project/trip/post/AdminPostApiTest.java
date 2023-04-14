@@ -1,8 +1,7 @@
 package com.project.trip.post;
 
 import com.project.trip.global.oauth.CustomOauthUser;
-import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import org.junit.jupiter.api.AfterEach;
@@ -40,7 +39,7 @@ public class AdminPostApiTest extends PostApiTest {
     @Test
     public void successPostSaveByAdmin() throws Exception {
         //given
-        PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NORMAL);
+        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto("title", "content", normal);
 
         MockMultipartFile image1 = imageFromLocal(1);
         MockMultipartFile image2 = imageFromLocal(2);
@@ -58,7 +57,7 @@ public class AdminPostApiTest extends PostApiTest {
     @Test
     public void successNoticePostSaveByAdmin() throws Exception{
         //given
-        PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NOTICE);
+        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto("title", "content", notice);
 
         MockMultipartFile image1 = imageFromLocal(1);
         MockMultipartFile image2 = imageFromLocal(2);

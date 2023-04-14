@@ -1,12 +1,13 @@
 package com.project.trip.post.controller;
 
+import com.project.trip.global.annotation.ChoosePostService;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
-import com.project.trip.post.model.request.PostSaveRequestDto;
-import com.project.trip.post.model.request.PostUpdateRequestDto;
+import com.project.trip.post.entity.PostKind;
+import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
-import com.project.trip.post.model.response.PostSimpleResponseDto;
-import com.project.trip.post.service.PostServiceImpl;
+import com.project.trip.post.service.PostService;
+import com.project.trip.post.service.PostServiceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,7 +26,7 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    private final PostServiceImpl postService;
+    private final PostServiceFactory postServiceFactory;
     private final PostImageServiceImpl postImageService;
 
     @GetMapping("/posts")
@@ -35,40 +36,44 @@ public class PostController {
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")
-    public void save(@ModelAttribute("postSaveRequest") PostSaveRequestDto postSaveRequestDto,
+    public void save(@ModelAttribute("postSaveRequest") PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto,
                      @RequestParam(value = "images") List<MultipartFile> images,
                      @AuthenticationPrincipal CustomOauthUser oauthUser) throws IOException {
-        Long postId = postService.save(postSaveRequestDto, oauthUser.getEmail());
+        PostService postService = postServiceFactory.getService(PostKind.convertToEnum(postSaveAndUpdateRequestDto.getKind()));
+
+        Long postId = postService.save(postSaveAndUpdateRequestDto, oauthUser.getEmail());
 
         postImageService.saveImage(images, postId);
     }
 
     @DeleteMapping("/posts/{postId}")
     public void delete(@PathVariable Long postId) {
-        postService.delete(postId);
+
+        //postService.delete(postId);
     }
 
     @PutMapping("/posts/{postId}")
-    public void update(@RequestBody PostUpdateRequestDto postUpdateRequestDto, @PathVariable Long postId) {
-        postService.update(postUpdateRequestDto, postId);
+    public void update(@RequestBody PostSaveAndUpdateRequestDto postUpdateRequestDto, @PathVariable Long postId) {
+        //postService.update(postUpdateRequestDto, postId);
     }
 
     @PostMapping("/posts/{postsId}/like")
     public void like(@PathVariable Long postsId,
                      @AuthenticationPrincipal CustomOauthUser oauthUser) {
-        postService.like(postsId, oauthUser);
+        //postService.like(postsId, oauthUser);
     }
 
     @GetMapping("/posts/{postId}")
     public PostResponseDto getPostById(@PathVariable Long postId) {
-        return postService.getPostById(postId);
+
+        return null;//postService.getPostById(postId);
     }
 
     @GetMapping("/board")
     public void getBoard(@PathVariable String boardKind,
                          @PageableDefault(size = 5) Pageable pageable) {
-        List<PostSimpleResponseDto> noticeList = postService.getNotices();
-        List<PostSimpleResponseDto> postList = postService.getBoard(pageable);
+        //List<PostSimpleResponseDto> noticeList = postService.getNotices();
+        //List<PostSimpleResponseDto> postList = postService.getBoard(pageable);
 
         //TODO 위 두 List를 어떻게 반환할지 고민
     }

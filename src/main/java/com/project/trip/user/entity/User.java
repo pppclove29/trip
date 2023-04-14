@@ -4,7 +4,6 @@ import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 

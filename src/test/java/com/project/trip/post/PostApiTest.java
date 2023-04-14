@@ -1,11 +1,10 @@
 package com.project.trip.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveRequestDto;
-import com.project.trip.post.model.request.PostUpdateRequestDto;
+import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
+import com.project.trip.post.repository.NormalPostRepository;
+import com.project.trip.post.repository.NoticePostRepository;
 import com.project.trip.user.service.UserServiceImpl;
-import org.junit.Assert;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,23 +12,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 public class PostApiTest {
+    @Autowired
+    NormalPostRepository normalPostRepository;
+    @Autowired
+    NoticePostRepository noticePostRepository;
 
     @Autowired
     UserServiceImpl userService;
@@ -38,14 +36,14 @@ public class PostApiTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    ResultActions saveSamplePost(String title, String content, PostKind kind, int imageCount) throws Exception {
+    ResultActions saveSamplePost(String title, String content, String kind, int imageCount) throws Exception {
         MockMultipartHttpServletRequestBuilder request = multipart("/posts");
 
         addImagetoRequest(request, imageCount);
 
-        PostSaveRequestDto dto = makePostSaveRequestDto(title, content, kind);
+        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto(title, content, kind);
 
-        return mockMvc.perform(request.flashAttr("postSaveRequest", dto));
+        return mockMvc.perform(request.content(objectMapper.writeValueAsString(dto)));
     }
 
     void addImagetoRequest(MockMultipartHttpServletRequestBuilder request, int imageCount) throws IOException {
@@ -55,8 +53,8 @@ public class PostApiTest {
         }
     }
 
-    PostSaveRequestDto makePostSaveRequestDto(String title, String content, PostKind postKind) {
-        PostSaveRequestDto dto = new PostSaveRequestDto();
+    PostSaveAndUpdateRequestDto makePostSaveRequestDto(String title, String content, String postKind) {
+        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
         dto.setTitle(title);
         dto.setContent(content);
         dto.setKind(postKind);
@@ -72,5 +70,14 @@ public class PostApiTest {
                 "image" + imageIdx + ".jpg",
                 "image/jpg",
                 new FileInputStream(imagePath + imageIdx + ".jpg"));
+    }
+
+    String normal = "Normal";
+    String notice = "Notice";
+
+    Long getCurPostID(String kind) {
+        if(kind.equals(normal))
+            return normalPostRepository.findAll().get(0).getId();
+        return noticePostRepository.findAll().get(0).getId();
     }
 }

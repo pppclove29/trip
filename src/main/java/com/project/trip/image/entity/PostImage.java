@@ -17,8 +17,7 @@ public class PostImage extends Image{
 
         return image;
     }
-
     @JoinColumn(name = "POST_ID")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
+    Post post;
 }

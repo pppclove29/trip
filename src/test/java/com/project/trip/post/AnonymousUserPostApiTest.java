@@ -1,7 +1,6 @@
 package com.project.trip.post;
 
-import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
@@ -16,7 +15,7 @@ public class AnonymousUserPostApiTest extends PostApiTest{
     @Test
     public void errorPostSaveWithImagesByAnonymousUser() throws Exception {
         //given
-        PostSaveRequestDto dto = makePostSaveRequestDto("title", "content", PostKind.NORMAL);
+        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto("title", "content", normal);
 
         MockMultipartFile image1 = imageFromLocal(1);
         MockMultipartFile image2 = imageFromLocal(2);

@@ -4,7 +4,7 @@ import com.project.trip.image.entity.Image;
 import com.project.trip.image.entity.PostImage;
 import com.project.trip.image.repository.PostImageRepository;
 import com.project.trip.post.entity.Post;
-import com.project.trip.post.service.PostServiceImpl;
+import com.project.trip.post.service.NormalPostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class PostImageServiceImpl implements ImageService {
     @Value("${file.image.path.post.format}")
     private String postImageSaveFormat;
     private final PostImageRepository imageRepository;
-    private final PostServiceImpl postService;
+    private final NormalPostServiceImpl postService;
 
     @Override
     public List<Image> getImage(Long sid) {

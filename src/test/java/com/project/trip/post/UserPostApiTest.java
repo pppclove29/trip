@@ -2,25 +2,19 @@ package com.project.trip.post;
 
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
-import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveRequestDto;
-import com.project.trip.post.model.response.PostResponseDto;
-import com.project.trip.post.repository.PostRepository;
+import com.project.trip.post.repository.NormalPostRepository;
+import com.project.trip.post.repository.NoticePostRepository;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import com.project.trip.user.repository.UserRepository;
-import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import org.junit.Assert;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 
@@ -32,8 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @WithMockUser
 public class UserPostApiTest extends PostApiTest {
 
-    @Autowired
-    PostRepository postRepository;
+
     @Autowired
     UserRepository userRepository;
 
@@ -50,7 +43,6 @@ public class UserPostApiTest extends PostApiTest {
 
     @AfterEach
     public void clear() {
-        postRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -58,7 +50,7 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void successSavePostByUser() throws Exception {
         //given, when
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", PostKind.NORMAL, 3);
+        ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 3);
 
         //then
         actions.andExpect(status().isOk());
@@ -68,7 +60,7 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void errorSavePostByUserWithOutImages() throws Exception {
         //given, when
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", PostKind.NORMAL, 0);
+        ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 0);
 
         //then
         actions.andExpect(status().is4xxClientError());
@@ -85,7 +77,7 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void errorSaveNoticePostByUser() throws Exception {
         //given, when
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", PostKind.NOTICE, 0);
+        ResultActions actions = saveSamplePost("Sample title", "Sample content", notice, 0);
 
         //then
         actions.andExpect(status().is4xxClientError());
@@ -96,12 +88,10 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void successDeleteOwnPostByUser() throws Exception {
         //given
-        saveSamplePost("Sample title", "Sample content", PostKind.NOTICE, 2);
-
-        Post post = postRepository.findAll().get(0);
+        ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 2);
 
         //when, then
-        mockMvc.perform(delete("/posts/" + post.getId()))
+        mockMvc.perform(delete("/posts/" + getCurPostID(normal)))
                 .andExpect(status().isOk());
     }
 
@@ -152,12 +142,12 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void successStarPostByUser() throws Exception {
         //given
-        saveSamplePost("Sample title", "Sample content", PostKind.NORMAL, 2);
+        saveSamplePost("Sample title", "Sample content", normal, 2);
 
-        Post post = postRepository.findAll().get(0);
+       
 
         //when, then
-        mockMvc.perform(post("/posts/" + post.getId()))
+        mockMvc.perform(post("/posts/" + getCurPostID(normal)))
                 .andExpect(status().isOk());
     }
 
@@ -186,12 +176,10 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void successReadPostByUser() throws Exception {
         //given
-        saveSamplePost("Sample title", "Sample content", PostKind.NORMAL, 2);
-
-        Post post = postRepository.findAll().get(0);
+        saveSamplePost("Sample title", "Sample content", normal, 2);
 
         //when, then
-        mockMvc.perform(get("/posts/" + post.getId()))
+        mockMvc.perform(get("/posts/" + getCurPostID(normal)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Sample title"))
                 .andExpect(jsonPath("$.content").value("Sample content"));
@@ -214,11 +202,11 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void 정상적인_게시판_열람() throws Exception {
         for (int idx = 0; idx < 10; idx++)
-            saveSamplePost("Sample title" + idx, "Sample content" + idx, PostKind.NOTICE, 2);
+            saveSamplePost("Sample title" + idx, "Sample content" + idx, notice, 2);
 
 
         for (int idx = 0; idx < 20; idx++)
-            saveSamplePost("Sample title" + idx, "Sample content" + idx, PostKind.NORMAL, 2);
+            saveSamplePost("Sample title" + idx, "Sample content" + idx, normal, 2);
 
 
     }

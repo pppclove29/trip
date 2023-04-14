@@ -1,13 +1,12 @@
 package com.project.trip.post.service;
 
 import com.project.trip.global.oauth.CustomOauthUser;
+import com.project.trip.post.entity.NormalPost;
 import com.project.trip.post.entity.Post;
-import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveRequestDto;
-import com.project.trip.post.model.request.PostUpdateRequestDto;
+import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.model.response.PostSimpleResponseDto;
-import com.project.trip.post.repository.PostRepository;
+import com.project.trip.post.repository.NormalPostRepository;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,21 +16,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class PostServiceImpl implements PostService {
+public class NormalPostServiceImpl implements PostService {
 
     private final UserServiceImpl userService;
-    private final PostRepository postRepository;
+    private final NormalPostRepository postRepository;
 
     @Override
-    public Long save(PostSaveRequestDto postSaveRequestDto, String userEmail) {
+    public Long save(PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto, String userEmail) {
         User user = userService.getUserByEmail(userEmail);
 
-        Post post = Post.fromDto(postSaveRequestDto);
+        NormalPost post = NormalPost.from(postSaveAndUpdateRequestDto);
 
         //좋은 방식인가? 한쪽에서 몰아서 하는게 좋을까?
         post.setWriter(user);
@@ -48,7 +46,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void update(PostUpdateRequestDto postUpdateRequestDto, Long postId) {
+    public void update(PostSaveAndUpdateRequestDto postUpdateRequestDto, Long postId) {
         findPostById(postId).update(postUpdateRequestDto);
     }
 
@@ -64,23 +62,15 @@ public class PostServiceImpl implements PostService {
         return PostResponseDto.fromEntity(findPostById(postId));
     }
 
-    @Override
-    public List<PostSimpleResponseDto> getNotices() {
-        List<Post> noticeList = postRepository.findTop5Recent();
-
-        return noticeList.stream().map(PostSimpleResponseDto::toDto).toList();
-    }
-
-    @Override
-    public List<PostSimpleResponseDto> getBoard(Pageable pageable) {
-        Page<Post> postPage = postRepository.findByKind(PostKind.NORMAL, pageable);
-
-          return postPage.stream().map(PostSimpleResponseDto::toDto).toList();
-    }
-
 
     @Override
     public Post findPostById(Long postId) throws IllegalArgumentException {
         return postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+    }
+
+    public List<PostSimpleResponseDto> getBoard(Pageable pageable) {
+        Page<NormalPost> postPage = postRepository.findAll(pageable);
+
+        return postPage.stream().map(PostSimpleResponseDto::toDto).toList();
     }
 }
