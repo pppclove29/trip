@@ -4,7 +4,7 @@ import com.project.trip.image.entity.Image;
 import com.project.trip.image.entity.PostImage;
 import com.project.trip.image.repository.PostImageRepository;
 import com.project.trip.post.entity.Post;
-import com.project.trip.post.service.NormalPostServiceImpl;
+import com.project.trip.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class PostImageServiceImpl implements ImageService {
     @Value("${file.image.path.post.format}")
     private String postImageSaveFormat;
     private final PostImageRepository imageRepository;
-    private final NormalPostServiceImpl postService;
+    private final PostServiceImpl postService;
 
     @Override
     public List<Image> getImage(Long sid) {
@@ -44,7 +44,7 @@ public class PostImageServiceImpl implements ImageService {
     }
 
     public void saveImage(List<MultipartFile> images, Long postId) {
-        Post post = postService.findPostById(postId);
+        Post post = postService.getPostById(postId);
 
         int imageIdx = 0;
         for (MultipartFile image : images) {

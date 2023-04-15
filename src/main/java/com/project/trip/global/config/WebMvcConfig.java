@@ -15,7 +15,6 @@ import java.util.List;
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final PostControllerHandler postControllerHandler;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new PostKindCheckIntercept())
@@ -24,7 +23,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(postControllerHandler);
     }
 
 }

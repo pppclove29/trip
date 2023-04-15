@@ -1,9 +1,7 @@
 package com.project.trip.post;
 
 import com.project.trip.global.oauth.CustomOauthUser;
-import com.project.trip.post.entity.Post;
-import com.project.trip.post.repository.NormalPostRepository;
-import com.project.trip.post.repository.NoticePostRepository;
+import com.project.trip.post.repository.PostRepository;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import com.project.trip.user.repository.UserRepository;
@@ -27,9 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class UserPostApiTest extends PostApiTest {
 
 
-    @Autowired
-    UserRepository userRepository;
-
     @BeforeEach
     public void init() {
         User user = mock(User.class);
@@ -39,6 +34,7 @@ public class UserPostApiTest extends PostApiTest {
         context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));
 
         userService.save(new AdditionInfoUserSaveRequestDto(), userDetails);
+
     }
 
     @AfterEach
@@ -91,7 +87,7 @@ public class UserPostApiTest extends PostApiTest {
         ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 2);
 
         //when, then
-        mockMvc.perform(delete("/posts/" + getCurPostID(normal)))
+        mockMvc.perform(delete("/posts/" + getCurPostID()))
                 .andExpect(status().isOk());
     }
 
@@ -147,7 +143,7 @@ public class UserPostApiTest extends PostApiTest {
        
 
         //when, then
-        mockMvc.perform(post("/posts/" + getCurPostID(normal)))
+        mockMvc.perform(post("/posts/" + getCurPostID()))
                 .andExpect(status().isOk());
     }
 
@@ -179,7 +175,7 @@ public class UserPostApiTest extends PostApiTest {
         saveSamplePost("Sample title", "Sample content", normal, 2);
 
         //when, then
-        mockMvc.perform(get("/posts/" + getCurPostID(normal)))
+        mockMvc.perform(get("/posts/" + getCurPostID()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Sample title"))
                 .andExpect(jsonPath("$.content").value("Sample content"));
@@ -201,6 +197,7 @@ public class UserPostApiTest extends PostApiTest {
 
     @Test
     public void 정상적인_게시판_열람() throws Exception {
+        //given
         for (int idx = 0; idx < 10; idx++)
             saveSamplePost("Sample title" + idx, "Sample content" + idx, notice, 2);
 
@@ -208,7 +205,8 @@ public class UserPostApiTest extends PostApiTest {
         for (int idx = 0; idx < 20; idx++)
             saveSamplePost("Sample title" + idx, "Sample content" + idx, normal, 2);
 
-
+        mockMvc.perform(get("/board"))
+                .andExpect(status().isOk());
     }
 
     @Test

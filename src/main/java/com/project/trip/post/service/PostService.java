@@ -4,6 +4,10 @@ import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
+import com.project.trip.post.model.response.PostSimpleResponseDto;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface PostService {
 
@@ -15,7 +19,12 @@ public interface PostService {
 
     void like(Long postId, CustomOauthUser oauthUser);
 
-    PostResponseDto getPostById(Long postId);
+    PostResponseDto getPostDtoById(Long postId);
 
-    Post findPostById(Long postId) throws IllegalArgumentException;
+    Post getPostById(Long postId) throws IllegalArgumentException;
+
+    List<PostSimpleResponseDto> getPostsByKind(Pageable pageable);
+
+    List<PostSimpleResponseDto> getNotices();
+
 }

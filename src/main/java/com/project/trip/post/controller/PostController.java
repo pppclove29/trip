@@ -1,13 +1,11 @@
 package com.project.trip.post.controller;
 
-import com.project.trip.global.annotation.ChoosePostService;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
-import com.project.trip.post.entity.PostKind;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
-import com.project.trip.post.service.PostService;
-import com.project.trip.post.service.PostServiceFactory;
+import com.project.trip.post.model.response.PostSimpleResponseDto;
+import com.project.trip.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,7 +24,7 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    private final PostServiceFactory postServiceFactory;
+    private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
 
     @GetMapping("/posts")
@@ -39,8 +37,6 @@ public class PostController {
     public void save(@ModelAttribute("postSaveRequest") PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto,
                      @RequestParam(value = "images") List<MultipartFile> images,
                      @AuthenticationPrincipal CustomOauthUser oauthUser) throws IOException {
-        PostService postService = postServiceFactory.getService(PostKind.convertToEnum(postSaveAndUpdateRequestDto.getKind()));
-
         Long postId = postService.save(postSaveAndUpdateRequestDto, oauthUser.getEmail());
 
         postImageService.saveImage(images, postId);
@@ -48,34 +44,33 @@ public class PostController {
 
     @DeleteMapping("/posts/{postId}")
     public void delete(@PathVariable Long postId) {
-
-        //postService.delete(postId);
+        postService.delete(postId);
     }
 
     @PutMapping("/posts/{postId}")
     public void update(@RequestBody PostSaveAndUpdateRequestDto postUpdateRequestDto, @PathVariable Long postId) {
-        //postService.update(postUpdateRequestDto, postId);
+        postService.update(postUpdateRequestDto, postId);
     }
 
     @PostMapping("/posts/{postsId}/like")
     public void like(@PathVariable Long postsId,
                      @AuthenticationPrincipal CustomOauthUser oauthUser) {
-        //postService.like(postsId, oauthUser);
+        postService.like(postsId, oauthUser);
     }
 
     @GetMapping("/posts/{postId}")
     public PostResponseDto getPostById(@PathVariable Long postId) {
 
-        return null;//postService.getPostById(postId);
+        return postService.getPostDtoById(postId);
     }
 
     @GetMapping("/board")
     public void getBoard(@PathVariable String boardKind,
                          @PageableDefault(size = 5) Pageable pageable) {
-        //List<PostSimpleResponseDto> noticeList = postService.getNotices();
-        //List<PostSimpleResponseDto> postList = postService.getBoard(pageable);
+        List<PostSimpleResponseDto> noticeList = postService.getNotices();
+        List<PostSimpleResponseDto> postList = postService.getPostsByKind(pageable);
 
-        //TODO 위 두 List를 어떻게 반환할지 고민
+        //TODO 위 두 List를 어떻게 반환할지 고민 return
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -2,8 +2,9 @@ package com.project.trip.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
-import com.project.trip.post.repository.NormalPostRepository;
-import com.project.trip.post.repository.NoticePostRepository;
+import com.project.trip.post.repository.PostRepository;
+import com.project.trip.post.service.PostServiceImpl;
+import com.project.trip.user.repository.UserRepository;
 import com.project.trip.user.service.UserServiceImpl;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class PostApiTest {
     @Autowired
-    NormalPostRepository normalPostRepository;
-    @Autowired
-    NoticePostRepository noticePostRepository;
-
-    @Autowired
     UserServiceImpl userService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    PostRepository postRepository;
+
+
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -75,9 +77,7 @@ public class PostApiTest {
     String normal = "Normal";
     String notice = "Notice";
 
-    Long getCurPostID(String kind) {
-        if(kind.equals(normal))
-            return normalPostRepository.findAll().get(0).getId();
-        return noticePostRepository.findAll().get(0).getId();
+    Long getCurPostID(){
+        return postRepository.findAll().get(0).getId();
     }
 }

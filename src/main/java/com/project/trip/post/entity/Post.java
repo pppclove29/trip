@@ -17,13 +17,23 @@ import java.util.List;
 @Entity
 public class Post {
     protected Post() { /* 생성자 숨김 */ }
+
+    public static Post from(PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto) {
+        Post post = new Post();
+
+        post.title = postSaveAndUpdateRequestDto.getTitle();
+        post.content = postSaveAndUpdateRequestDto.getContent();
+
+        return post;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "POST_ID", nullable = false)
     private Long id;
 
-    protected String title;
-    protected String content;
+    private String title;
+    private String content;
 
     @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,8 +56,6 @@ public class Post {
     }
 
     public void like(User user) {
-
-        System.out.println("추처 시도");
         if (staredUser.contains(user))
             staredUser.remove(user);
         else
@@ -55,7 +63,6 @@ public class Post {
     }
 
     public void raiseView() {
-        //TODO 방식 변경
         views++;
     }
 
