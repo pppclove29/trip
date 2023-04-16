@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@DiscriminatorColumn
-@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Entity
 public class Post {
@@ -23,6 +21,7 @@ public class Post {
 
         post.title = postSaveAndUpdateRequestDto.getTitle();
         post.content = postSaveAndUpdateRequestDto.getContent();
+        post.kind = PostKind.convertFromString(postSaveAndUpdateRequestDto.getKind());
 
         return post;
     }
@@ -34,6 +33,8 @@ public class Post {
 
     private String title;
     private String content;
+    @Enumerated(EnumType.STRING)
+    private PostKind kind;
 
     @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)

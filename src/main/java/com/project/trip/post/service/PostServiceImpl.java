@@ -2,6 +2,7 @@ package com.project.trip.post.service;
 
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
+import com.project.trip.post.entity.PostKind;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.model.response.PostSimpleResponseDto;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -67,14 +69,25 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSimpleResponseDto> getPostsByKind(Pageable pageable) {
-        Page<Post> postPage = postRepository.findAll(pageable);
+    public List<PostSimpleResponseDto> getPostsByKind(String kind, Pageable pageable) {
+        PostKind postKind = PostKind.convertFromString(kind);
+        Page<Post> postPage = postRepository.findByKind(postKind, pageable);
 
-        return postPage.stream().map(PostSimpleResponseDto::toDto).toList();
+        return postPage.stream().map(PostSimpleResponseDto::fromDto).toList();
     }
 
     @Override
     public List<PostSimpleResponseDto> getNotices() {
-        return null;
+        List<Post> postList = postRepository.findTop5ByKindOrderByWrittenDateDesc(PostKind.NOTICE);
+
+        return postList.stream().map(PostSimpleResponseDto::fromDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean checkAuth(CustomOauthUser oauthUser, Long postId) {
+        User user = userService.getUserByEmail(oauthUser.getEmail());
+        Post post = getPostById(postId);
+
+        return user.getPosts().contains(post);
     }
 }

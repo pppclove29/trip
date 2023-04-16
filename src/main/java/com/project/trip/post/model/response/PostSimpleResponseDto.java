@@ -13,7 +13,7 @@ public class PostSimpleResponseDto {
     private int views;
     private int likes;
 
-    public static PostSimpleResponseDto toDto(Post post) {
+    public static PostSimpleResponseDto fromDto(Post post) {
         PostSimpleResponseDto postSimpleResponseDto = new PostSimpleResponseDto();
 
         postSimpleResponseDto.postId = post.getId();

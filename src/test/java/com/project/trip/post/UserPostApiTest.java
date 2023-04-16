@@ -1,40 +1,46 @@
 package com.project.trip.post;
 
 import com.project.trip.global.oauth.CustomOauthUser;
-import com.project.trip.post.repository.PostRepository;
+import com.project.trip.post.entity.Post;
+import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
+import com.project.trip.post.service.PostServiceImpl;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
-import com.project.trip.user.repository.UserRepository;
-import org.junit.jupiter.api.*;
+import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import org.junit.Assert;
 import org.springframework.test.web.servlet.ResultActions;
 
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
 public class UserPostApiTest extends PostApiTest {
 
+    @Autowired
+    PostServiceImpl postService;
 
+    String userEmail = "email@name";
     @BeforeEach
     public void init() {
         User user = mock(User.class);
+        when(user.getEmail()).thenReturn(userEmail);
 
         CustomOauthUser userDetails = new CustomOauthUser(user);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));
 
         userService.save(new AdditionInfoUserSaveRequestDto(), userDetails);
-
     }
 
     @AfterEach
@@ -79,24 +85,41 @@ public class UserPostApiTest extends PostApiTest {
         actions.andExpect(status().is4xxClientError());
     }
 
-
     @DisplayName("자신 게시글 삭제 성공")
     @Test
     public void successDeleteOwnPostByUser() throws Exception {
         //given
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 2);
+        saveSamplePost("Sample title", "Sample content", normal, 2);
 
         //when, then
         mockMvc.perform(delete("/posts/" + getCurPostID()))
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("타인의 게시글 삭제 에러")
+    @Test
+    public void errorDeleteOthersPostByUser() throws Exception {
+        //given
+        PostSaveAndUpdateRequestDto post = mock(PostSaveAndUpdateRequestDto.class);
+        when(post.getKind()).thenReturn("normal");
+        when(post.getTitle()).thenReturn("title");
+        when(post.getContent()).thenReturn("content");
+
+        //TODO 사기칠 생각
+        postService.save(post, userEmail);
+
+        //when, then
+        mockMvc.perform(delete("/posts/" + getCurPostID()))
+                .andExpect(status().isOk());
+    }
+
+
     @DisplayName("존재하지 않는 게시글 삭제 에러")
     @Test
     public void errorDeletePostNotExistByUser() throws Exception {
         //when, then
         mockMvc.perform(delete("/posts/99999999"))
-                .andExpect(status().isOk());
+                .andExpect(status().is4xxClientError());
     }
 
     @DisplayName("적합하지 않은 문자로 게시글 삭제 에러")
@@ -140,10 +163,9 @@ public class UserPostApiTest extends PostApiTest {
         //given
         saveSamplePost("Sample title", "Sample content", normal, 2);
 
-       
 
         //when, then
-        mockMvc.perform(post("/posts/" + getCurPostID()))
+        mockMvc.perform(post("/posts/" + getCurPostID() + "/like"))
                 .andExpect(status().isOk());
     }
 
@@ -151,7 +173,7 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void errorStarPostNotExistByUser() throws Exception {
         //when, then
-        mockMvc.perform(post("/posts/99999999"))
+        mockMvc.perform(post("/posts/99999999/like"))
                 .andExpect(status().isOk());
     }
 
@@ -159,7 +181,7 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void errorStarPostWithNotSuitableCharByUser() throws Exception {
         //when, then
-        mockMvc.perform(post("/posts/oh_my_god"))
+        mockMvc.perform(post("/posts/oh_my_god/like"))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -181,22 +203,23 @@ public class UserPostApiTest extends PostApiTest {
                 .andExpect(jsonPath("$.content").value("Sample content"));
     }
 
+    @DisplayName("존재하지 않는 게시글 열람 에러")
     @Test
-    public void 존재하지_않는_게시글_열람() throws Exception {
+    public void errorReadPostNotExistByUser() throws Exception {
         mockMvc.perform(get("/posts/99999999"))
                 .andExpect(status().is4xxClientError());
-
-
     }
 
+    @DisplayName("적합하지 않은 문자로 게시글 열람 에러")
     @Test
-    public void 적합하지_않은_문자로_게시글_열람() throws Exception {
+    public void errorReadPostPostWithNotSuitableCharsByUser() throws Exception {
         mockMvc.perform(get("/posts/oh~~~!!이게뭐야~"))
                 .andExpect(status().is4xxClientError());
     }
 
+    @DisplayName("정상적인 게시판 열람")
     @Test
-    public void 정상적인_게시판_열람() throws Exception {
+    public void successReadBoardByUser() throws Exception {
         //given
         for (int idx = 0; idx < 10; idx++)
             saveSamplePost("Sample title" + idx, "Sample content" + idx, notice, 2);
@@ -207,6 +230,8 @@ public class UserPostApiTest extends PostApiTest {
 
         mockMvc.perform(get("/board"))
                 .andExpect(status().isOk());
+
+        //TODO json 테스트
     }
 
     @Test

@@ -23,8 +23,10 @@ public interface PostService {
 
     Post getPostById(Long postId) throws IllegalArgumentException;
 
-    List<PostSimpleResponseDto> getPostsByKind(Pageable pageable);
+    List<PostSimpleResponseDto> getPostsByKind(String kind, Pageable pageable);
 
     List<PostSimpleResponseDto> getNotices();
+
+    boolean checkAuth(CustomOauthUser oauthUser, Long postId);
 
 }
