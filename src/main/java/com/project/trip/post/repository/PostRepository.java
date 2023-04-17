@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Page<Post> findByKind(PostKind kind, Pageable pageable);
-    List<Post> findTop5ByKindOrderByWrittenDateDesc(PostKind kind);
+    Page<Post> findByKindOrderByIdDesc(PostKind kind, Pageable pageable);
+    List<Post> findTop5ByKindOrderByIdDesc(PostKind kind);
 }

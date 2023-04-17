@@ -71,14 +71,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostSimpleResponseDto> getPostsByKind(String kind, Pageable pageable) {
         PostKind postKind = PostKind.convertFromString(kind);
-        Page<Post> postPage = postRepository.findByKind(postKind, pageable);
+        Page<Post> postPage = postRepository.findByKindOrderByIdDesc(postKind, pageable);
 
         return postPage.stream().map(PostSimpleResponseDto::fromDto).toList();
     }
 
     @Override
     public List<PostSimpleResponseDto> getNotices() {
-        List<Post> postList = postRepository.findTop5ByKindOrderByWrittenDateDesc(PostKind.NOTICE);
+        List<Post> postList = postRepository.findTop5ByKindOrderByIdDesc(PostKind.NOTICE);
 
         return postList.stream().map(PostSimpleResponseDto::fromDto).collect(Collectors.toList());
     }

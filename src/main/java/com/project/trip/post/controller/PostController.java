@@ -1,5 +1,6 @@
 package com.project.trip.post.controller;
 
+import com.project.trip.global.annotation.RequireAuth;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
 import com.project.trip.post.entity.PostKind;
@@ -29,11 +30,6 @@ public class PostController {
     private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
 
-    @GetMapping("/posts")
-    public String view() {
-        return "write";
-    }
-
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")
     public ResponseEntity<?> save(@ModelAttribute("postSaveRequest") PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto,
@@ -53,28 +49,25 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @RequireAuth
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<?> delete(@PathVariable Long postId,
-                                    @AuthenticationPrincipal CustomOauthUser oauthUser) throws IllegalArgumentException{
-        boolean hasAuth = postService.checkAuth(oauthUser, postId);
-        System.out.println(hasAuth);
-
-        if (!hasAuth) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+    public ResponseEntity<?> delete(@PathVariable Long postId) throws IllegalArgumentException {
         postService.delete(postId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @RequireAuth
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PutMapping("/posts/{postId}")
-    public void update(@RequestBody PostSaveAndUpdateRequestDto postUpdateRequestDto,
-                       @PathVariable Long postId) {
+    public ResponseEntity<?> update(@RequestBody PostSaveAndUpdateRequestDto postUpdateRequestDto,
+                                    @PathVariable Long postId,
+                                    @RequestParam(value = "images") List<MultipartFile> images) {
         postService.update(postUpdateRequestDto, postId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @RequireAuth
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts/{postsId}/like")
     public void like(@PathVariable Long postsId,
@@ -87,7 +80,7 @@ public class PostController {
         return postService.getPostDtoById(postId);
     }
 
-    @GetMapping("/board")
+    @GetMapping("/board/{boardKind}")
     public BoardResponseDto getBoard(@PathVariable String boardKind,
                                      @PageableDefault(size = 5) Pageable pageable) {
         BoardResponseDto boardResponseDto = new BoardResponseDto();

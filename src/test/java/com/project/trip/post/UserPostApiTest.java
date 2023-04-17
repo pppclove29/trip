@@ -1,98 +1,110 @@
 package com.project.trip.post;
 
-import com.project.trip.global.oauth.CustomOauthUser;
-import com.project.trip.post.entity.Post;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
-import com.project.trip.post.service.PostServiceImpl;
-import com.project.trip.user.entity.User;
-import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
+import com.project.trip.user.entity.Role;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WithMockUser
 public class UserPostApiTest extends PostApiTest {
-
-    @Autowired
-    PostServiceImpl postService;
-
-    String userEmail = "email@name";
     @BeforeEach
     public void init() {
-        User user = mock(User.class);
-        when(user.getEmail()).thenReturn(userEmail);
+        //save Session User
+        setUserInSecurityContext(makeMockUser(userEmail, Role.USER));
 
-        CustomOauthUser userDetails = new CustomOauthUser(user);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));
+        //save other User
+        makeMockUser(otherEmail, Role.USER);
 
-        userService.save(new AdditionInfoUserSaveRequestDto(), userDetails);
+        //save admin User
+        makeMockUser(adminEmail, Role.ADMIN);
     }
 
-    @AfterEach
-    public void clear() {
-        userRepository.deleteAll();
-    }
 
     @DisplayName("게시글 등록 성공")
     @Test
     public void successSavePostByUser() throws Exception {
-        //given, when
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 3);
+        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        dto.setTitle("title");
+        dto.setContent("content");
+        dto.setKind("normal");
 
-        //then
-        actions.andExpect(status().isOk());
+        mockMvc.perform(addImagetoRequest(multipart("/posts"), 2)
+                        .flashAttr("postSaveRequest", dto))
+                .andExpect(status().isOk());
     }
 
     @DisplayName("이미지 없이 게시글 등록 실패")
     @Test
     public void errorSavePostByUserWithOutImages() throws Exception {
-        //given, when
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", normal, 0);
+        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        dto.setTitle("title");
+        dto.setContent("content");
+        dto.setKind("normal");
 
-        //then
-        actions.andExpect(status().is4xxClientError());
+        mockMvc.perform(addImagetoRequest(multipart("/posts"), 0)
+                        .flashAttr("postSaveRequest", dto))
+                .andExpect(status().is4xxClientError());
     }
 
     @DisplayName("본문 내용 없이 게시글 등록 실패")
     @Test
     public void errorSavePostByUserWithOutForm() throws Exception {
-        saveSamplePost("", "", null, 0);
-        Assert.fail();
+        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        dto.setTitle("");
+        dto.setContent("");
+        dto.setKind("");
+
+        mockMvc.perform(addImagetoRequest(multipart("/posts"), 2)
+                        .flashAttr("postSaveRequest", dto))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @DisplayName("null로 게시글 등록 실패")
+    @Test
+    public void errorSavePostByUserWithNull() throws Exception {
+        mockMvc.perform(addImagetoRequest(multipart("/posts"), 2)
+                        .flashAttr("postSaveRequest", null))
+                .andExpect(status().is4xxClientError());
     }
 
     @DisplayName("공지글 등록 에러")
     @Test
     public void errorSaveNoticePostByUser() throws Exception {
-        //given, when
-        ResultActions actions = saveSamplePost("Sample title", "Sample content", notice, 0);
+        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        dto.setTitle("title");
+        dto.setContent("content");
+        dto.setKind("notice");
 
-        //then
-        actions.andExpect(status().is4xxClientError());
+        mockMvc.perform(addImagetoRequest(multipart("/posts"), 2)
+                        .flashAttr("postSaveRequest", dto))
+                .andExpect(status().is4xxClientError());
+    }
+
+    //TODO 알맞지 않은 글 종류로 등록 시 실패
+    @DisplayName("알맞지 않은 글 종류로 등록 에러")
+    @Test
+    public void errorSavePostWithNotSuitableKindByUser() {
+        Assert.fail();
     }
 
     @DisplayName("자신 게시글 삭제 성공")
     @Test
     public void successDeleteOwnPostByUser() throws Exception {
         //given
-        saveSamplePost("Sample title", "Sample content", normal, 2);
+        Long postID = makeMockPost("title", "content", "normal", userEmail);
 
         //when, then
-        mockMvc.perform(delete("/posts/" + getCurPostID()))
+        mockMvc.perform(delete("/posts/" + postID))
                 .andExpect(status().isOk());
     }
 
@@ -100,17 +112,11 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void errorDeleteOthersPostByUser() throws Exception {
         //given
-        PostSaveAndUpdateRequestDto post = mock(PostSaveAndUpdateRequestDto.class);
-        when(post.getKind()).thenReturn("normal");
-        when(post.getTitle()).thenReturn("title");
-        when(post.getContent()).thenReturn("content");
-
-        //TODO 사기칠 생각
-        postService.save(post, userEmail);
+        Long postID = makeMockPost("title", "content", "normal", otherEmail);
 
         //when, then
-        mockMvc.perform(delete("/posts/" + getCurPostID()))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/posts/" + postID))
+                .andExpect(status().is4xxClientError());
     }
 
 
@@ -133,7 +139,7 @@ public class UserPostApiTest extends PostApiTest {
     @DisplayName("정상적인 게시글 수정")
     @Test
     public void successUpdatePostByUSer() throws Exception {
-        //TODO 모든 수정 요청에 대해 PUT요청으로 처리하게 했으나 multipart는 POST만을 지원, 해결 방안이 필요함
+        //TODO 해결책 강구
         Assert.fail();
     }
 
@@ -157,15 +163,20 @@ public class UserPostApiTest extends PostApiTest {
         Assert.fail();
     }
 
+    @Test
+    public void 원래게시글종류와다른종류로수정시도() {
+
+    }
+
+
     @DisplayName("게시글 추천 성공")
     @Test
     public void successStarPostByUser() throws Exception {
         //given
-        saveSamplePost("Sample title", "Sample content", normal, 2);
-
+        Long postID = makeMockPost("title", "content", "normal", userEmail);
 
         //when, then
-        mockMvc.perform(post("/posts/" + getCurPostID() + "/like"))
+        mockMvc.perform(post("/posts/" + postID + "/like"))
                 .andExpect(status().isOk());
     }
 
@@ -174,7 +185,7 @@ public class UserPostApiTest extends PostApiTest {
     public void errorStarPostNotExistByUser() throws Exception {
         //when, then
         mockMvc.perform(post("/posts/99999999/like"))
-                .andExpect(status().isOk());
+                .andExpect(status().is4xxClientError());
     }
 
     @DisplayName("적합하지 않은 문자로 게시글 추천 에러")
@@ -194,13 +205,17 @@ public class UserPostApiTest extends PostApiTest {
     @Test
     public void successReadPostByUser() throws Exception {
         //given
-        saveSamplePost("Sample title", "Sample content", normal, 2);
+        Long postID = makeMockPost("title", "content", "normal", userEmail);
 
         //when, then
-        mockMvc.perform(get("/posts/" + getCurPostID()))
+        mockMvc.perform(get("/posts/" + postID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Sample title"))
-                .andExpect(jsonPath("$.content").value("Sample content"));
+                .andExpect(jsonPath("$.writer").value("user"))
+                .andExpect(jsonPath("$.title").value("title"))
+                .andExpect(jsonPath("$.content").value("content"))
+                .andExpect(jsonPath("$.views").value(0))
+                .andExpect(jsonPath("$.likes").value(0))
+                .andExpect(jsonPath("$.doLike").value(false));
     }
 
     @DisplayName("존재하지 않는 게시글 열람 에러")
@@ -217,37 +232,56 @@ public class UserPostApiTest extends PostApiTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    @DisplayName("정상적인 게시판 열람")
+    @DisplayName("정상적인 일반 게시판 열람")
     @Test
-    public void successReadBoardByUser() throws Exception {
+    public void successReadNormalBoardByUser() throws Exception {
         //given
-        for (int idx = 0; idx < 10; idx++)
-            saveSamplePost("Sample title" + idx, "Sample content" + idx, notice, 2);
-
-
-        for (int idx = 0; idx < 20; idx++)
-            saveSamplePost("Sample title" + idx, "Sample content" + idx, normal, 2);
-
-        mockMvc.perform(get("/board"))
+        for (int idx = 0; idx < 10; idx++) {
+            makeMockPost("notice_title" + idx, "content", "notice", adminEmail);
+        }
+        for (int idx = 0; idx < 20; idx++) {
+            makeMockPost("normal_title" + idx, "content", "normal", userEmail);
+        }
+        postCheck(mockMvc.perform(get("/board/normal")))
                 .andExpect(status().isOk());
-
-        //TODO json 테스트
     }
 
+    @DisplayName("게시글이 없는 게시판 열람 성공")
     @Test
-    public void 게시글이_없는_게시판_열람() {
-
+    public void successReadNoPostExistNormalBoardByUser() throws Exception {
+        mockMvc.perform(get("/board/normal"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.noticeList[0]").doesNotExist())
+                .andExpect(jsonPath("$.postList[0]").doesNotExist());
     }
 
+    @DisplayName("존재하지 않는 게시판 열람 에러")
     @Test
-    public void 게시글_수_보다_많은_페이지_사이즈로_게시판_열람_시_게시글_수에_맞게_출력되는지_확인() {
-
+    public void errorReadBoardDoesNotExistByUser() throws Exception {
+        mockMvc.perform(get("/board/없는게시글종류랍니다"))
+                .andExpect(status().is4xxClientError());
     }
 
-    @Test
-    public void 존재하지_않는_게시판_열람() {
+    ResultActions postCheck(ResultActions resultActions) throws Exception {
+        //TODO 페이지 개수 검증 회수 너무 하드코딩
+        for (int idx = 0; idx < 5; idx++) {
+            String jsonPathQuery = String.format("$.noticeList[%d]", idx);
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".writer").value("admin"));
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".title").value("notice_title" + (9 - idx)));
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".likes").value(0));
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".views").value(0));
+        }
+        resultActions.andExpect(jsonPath("$.noticeList[5]").doesNotExist());
 
+        for (int idx = 0; idx < 5; idx++) {
+            String jsonPathQuery = String.format("$.postList[%d]", idx);
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".writer").value("user"));
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".title").value("normal_title" + (19 - idx)));
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".likes").value(0));
+            resultActions.andExpect(jsonPath(jsonPathQuery + ".views").value(0));
+        }
+        resultActions.andExpect(jsonPath("$.postList[5]").doesNotExist());
+
+        return resultActions;
     }
-
-
 }

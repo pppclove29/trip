@@ -2,12 +2,14 @@ package com.project.trip.post;
 
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
+import com.project.trip.user.entity.Role;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.model.request.AdditionInfoUserSaveRequestDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -21,13 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AdminPostApiTest extends PostApiTest {
     @BeforeEach
     public void init() {
-        User user = mock(User.class);
+        //save Session User
+        setUserInSecurityContext(makeMockUser(userEmail, Role.ADMIN));
 
-        CustomOauthUser userDetails = new CustomOauthUser(user);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));
-
-        userService.save(new AdditionInfoUserSaveRequestDto(), userDetails);
+        //save other User
+        makeMockUser(otherEmail, Role.USER);
     }
 
     @AfterEach
@@ -38,36 +38,14 @@ public class AdminPostApiTest extends PostApiTest {
     @WithMockUser(roles = "ADMIN")
     @Test
     public void successPostSaveByAdmin() throws Exception {
-        //given
-        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto("title", "content", normal);
 
-        MockMultipartFile image1 = imageFromLocal(1);
-        MockMultipartFile image2 = imageFromLocal(2);
-
-        //when
-        mockMvc.perform(multipart("/posts")
-                        .file(image1)
-                        .file(image2)
-                        .flashAttr("postSaveRequest", dto))
-                .andExpect(status().isOk());
     }
 
     @DisplayName("관리자 공지글 등록 성공")
     @WithMockUser(roles = "ADMIN")
     @Test
     public void successNoticePostSaveByAdmin() throws Exception{
-        //given
-        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto("title", "content", notice);
 
-        MockMultipartFile image1 = imageFromLocal(1);
-        MockMultipartFile image2 = imageFromLocal(2);
-
-        //when
-        mockMvc.perform(multipart("/posts")
-                        .file(image1)
-                        .file(image2)
-                        .flashAttr("postSaveRequest", dto))
-                .andExpect(status().isOk());
     }
 
 

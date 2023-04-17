@@ -17,13 +17,8 @@ public class UserController {
 
     private final UserServiceImpl userService;
 
-    @GetMapping
-    public String temp(){
-        return "userSave";
-    }
-    @PostMapping
     public String save(AdditionInfoUserSaveRequestDto additionInfoUserSaveRequestDto,
-                       @AuthenticationPrincipal CustomOauthUser user){
+                       @AuthenticationPrincipal CustomOauthUser user) {
         userService.save(additionInfoUserSaveRequestDto, user);
 
         return "index";

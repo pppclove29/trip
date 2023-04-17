@@ -1,6 +1,6 @@
 package com.project.trip.global.config;
 
-import com.project.trip.global.interceptor.PostKindCheckIntercept;
+import com.project.trip.global.interceptor.PostAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -15,10 +15,12 @@ import java.util.List;
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private final PostAuthInterceptor postAuthInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new PostKindCheckIntercept())
-                .addPathPatterns("/posts*");
+        registry.addInterceptor(postAuthInterceptor)
+                .addPathPatterns("/posts/**");
     }
 
     @Override

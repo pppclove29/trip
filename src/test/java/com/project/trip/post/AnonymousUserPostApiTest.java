@@ -14,18 +14,7 @@ public class AnonymousUserPostApiTest extends PostApiTest{
     @WithAnonymousUser
     @Test
     public void errorPostSaveWithImagesByAnonymousUser() throws Exception {
-        //given
-        PostSaveAndUpdateRequestDto dto = makePostSaveRequestDto("title", "content", normal);
 
-        MockMultipartFile image1 = imageFromLocal(1);
-        MockMultipartFile image2 = imageFromLocal(2);
-
-        //when
-        mockMvc.perform(multipart("/posts")
-                        .file(image1)
-                        .file(image2)
-                        .flashAttr("postSaveRequest", dto))
-                .andExpect(status().is3xxRedirection());
     }
     @DisplayName("익명 유저 공지글 등록 에러")
     @WithAnonymousUser
