@@ -4,12 +4,14 @@ import com.project.trip.post.entity.Post;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class PostSimpleResponseDto {
     private Long postId;
-    //TODO 작성 시간 반환
     private String writer;
     private String title;
+    private LocalDateTime writtenDate;
     private int views;
     private int likes;
 
@@ -17,8 +19,9 @@ public class PostSimpleResponseDto {
         PostSimpleResponseDto postSimpleResponseDto = new PostSimpleResponseDto();
 
         postSimpleResponseDto.postId = post.getId();
-        postSimpleResponseDto.title = post.getTitle();
         postSimpleResponseDto.writer = post.getWriter().getName();
+        postSimpleResponseDto.title = post.getTitle();
+        postSimpleResponseDto.writtenDate = post.getCreatedDate();
         postSimpleResponseDto.views = post.getViews();
         postSimpleResponseDto.likes = post.getStaredUser().size();
 

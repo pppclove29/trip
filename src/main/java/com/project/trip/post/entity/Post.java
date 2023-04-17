@@ -1,5 +1,6 @@
 package com.project.trip.post.entity;
 
+import com.project.trip.global.mapper.BaseTime;
 import com.project.trip.image.entity.PostImage;
 import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
 import com.project.trip.user.entity.User;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Getter
 @Entity
-public class Post {
+public class Post extends BaseTime {
     protected Post() { /* 생성자 숨김 */ }
 
     public static Post from(PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto) {
@@ -43,13 +44,9 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL)
     private List<PostImage> images = new ArrayList<>();
 
-    @CreatedDate
-    private LocalDateTime writtenDate;
-
     @ManyToMany
     private List<User> staredUser = new ArrayList<>();
     private int views = 0;
-
 
     public void update(PostSaveAndUpdateRequestDto postUpdateRequestDto) {
         title = postUpdateRequestDto.getTitle();

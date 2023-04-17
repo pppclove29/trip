@@ -6,14 +6,11 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WithMockUser
 public class UserPostApiTest extends PostApiTest {
@@ -90,11 +87,17 @@ public class UserPostApiTest extends PostApiTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    //TODO 알맞지 않은 글 종류로 등록 시 실패
     @DisplayName("알맞지 않은 글 종류로 등록 에러")
     @Test
-    public void errorSavePostWithNotSuitableKindByUser() {
-        Assert.fail();
+    public void errorSavePostWithNotSuitableKindByUser() throws Exception {
+        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        dto.setTitle("title");
+        dto.setContent("content");
+        dto.setKind("im_groot");
+
+        mockMvc.perform(addImagetoRequest(multipart("/posts"), 2)
+                        .flashAttr("postSaveRequest", dto))
+                .andExpect(status().is4xxClientError());
     }
 
     @DisplayName("자신 게시글 삭제 성공")
@@ -194,11 +197,6 @@ public class UserPostApiTest extends PostApiTest {
         //when, then
         mockMvc.perform(post("/posts/oh_my_god/like"))
                 .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    public void 수정_중인_게시글_추천() {
-        Assert.fail();
     }
 
     @DisplayName("정상적인 게시글 열람")

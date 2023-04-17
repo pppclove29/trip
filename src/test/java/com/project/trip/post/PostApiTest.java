@@ -94,7 +94,7 @@ public class PostApiTest {
     }
 
     MockMultipartHttpServletRequestBuilder addImagetoRequest(MockMultipartHttpServletRequestBuilder request, int imageCount) throws IOException {
-        //TODO 이미지 개수 제한 설정
+        //TODO 이미지 개수 제한 설정 or 총 용량 제한 설정
         for (int idx = 1; idx <= imageCount; idx++) {
             request.file(imageFromLocal(idx));
         }

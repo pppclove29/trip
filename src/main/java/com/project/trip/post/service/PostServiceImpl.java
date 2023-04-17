@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
 @RequiredArgsConstructor
 @Service
 public class PostServiceImpl implements PostService {
@@ -26,6 +25,7 @@ public class PostServiceImpl implements PostService {
     private final UserServiceImpl userService;
     private final PostRepository postRepository;
 
+    @Transactional
     @Override
     public Long save(PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto, String userEmail) {
         User user = userService.getUserByEmail(userEmail);
@@ -41,16 +41,19 @@ public class PostServiceImpl implements PostService {
         return post.getId();
     }
 
+    @Transactional
     @Override
     public void delete(Long postId) {
         postRepository.deleteById(postId);
     }
 
+    @Transactional
     @Override
     public void update(PostSaveAndUpdateRequestDto postUpdateRequestDto, Long postId) {
         getPostById(postId).update(postUpdateRequestDto);
     }
 
+    @Transactional
     @Override
     public void like(Long postId, CustomOauthUser oauthUser) {
         User user = userService.getUserByEmail(oauthUser.getEmail());
@@ -58,9 +61,12 @@ public class PostServiceImpl implements PostService {
         getPostById(postId).like(user);
     }
 
+    @Transactional
     @Override
     public PostResponseDto getPostDtoById(Long postId) {
-        return PostResponseDto.fromEntity(getPostById(postId));
+        Post post = getPostById(postId);
+        post.raiseView();
+        return PostResponseDto.fromEntity(post);
     }
 
     @Override
@@ -68,6 +74,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<PostSimpleResponseDto> getPostsByKind(String kind, Pageable pageable) {
         PostKind postKind = PostKind.convertFromString(kind);
@@ -76,6 +83,7 @@ public class PostServiceImpl implements PostService {
         return postPage.stream().map(PostSimpleResponseDto::fromDto).toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<PostSimpleResponseDto> getNotices() {
         List<Post> postList = postRepository.findTop5ByKindOrderByIdDesc(PostKind.NOTICE);
@@ -83,6 +91,7 @@ public class PostServiceImpl implements PostService {
         return postList.stream().map(PostSimpleResponseDto::fromDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public boolean checkAuth(CustomOauthUser oauthUser, Long postId) {
         User user = userService.getUserByEmail(oauthUser.getEmail());

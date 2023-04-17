@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "USERS") //TODO h2 사용 안하면 제거할것
+@Table(name = "USERS")
 @Getter
 @Entity
 public class User {
