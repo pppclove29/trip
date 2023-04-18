@@ -64,8 +64,8 @@ public class PostImageServiceImpl implements ImageService {
     }
 
     private void saveImageToDB(Post post, String totalPath) {
-        PostImage postImage = PostImage.fromPostImagePath(totalPath, post);
-        post.addPostImage(postImage);
+        PostImage postImage = PostImage.fromPostImagePath(totalPath);
+        postImage.setPost(post);
 
         imageRepository.save(postImage);
     }

@@ -13,4 +13,37 @@ public enum Role {
     Role(String role) {
         this.role = role;
     }
+
+    /*
+    <Post Auth>
+    save
+        - admin
+            - accept all
+        - user
+            - non notice post
+        - anonymous
+            - deny all
+    update
+        - admin
+            - every notice post
+            - own post
+        - user
+            - own post
+        - anonymous
+            - deny all
+    delete
+        - admin
+            - accept all
+        - user
+            - own post
+        - anonymous
+            - deny all
+    view
+        - admin
+            - accept all
+        - user
+            - accept all
+        - anonymous
+            - accept all
+     */
 }

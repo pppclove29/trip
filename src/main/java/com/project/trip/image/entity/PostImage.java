@@ -9,15 +9,19 @@ import jakarta.persistence.*;
 public class PostImage extends Image{
     protected PostImage(){}
 
-    public static PostImage fromPostImagePath(String imagePath, Post post) {
+    public static PostImage fromPostImagePath(String imagePath) {
         PostImage image = new PostImage();
 
         image.url = imagePath;
-        image.post = post;
 
         return image;
     }
     @JoinColumn(name = "POST_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     Post post;
+
+    public void setPost(Post post){
+        this.post = post;
+        post.getImages().add(this);
+    }
 }

@@ -4,7 +4,8 @@ import com.project.trip.global.annotation.RequireAuth;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
 import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
+import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.post.model.response.BoardResponseDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,17 +32,16 @@ public class PostController {
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")
-    public ResponseEntity<?> save(@ModelAttribute("postSaveRequest") PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto,
+    public ResponseEntity<?> save(@ModelAttribute(value = "postSaveRequest") PostSaveRequestDto postSaveRequestDto,
                                   @RequestParam(value = "images") List<MultipartFile> images,
-                                  @AuthenticationPrincipal CustomOauthUser oauthUser) throws IOException {
-        PostKind postKind = PostKind.convertFromString(postSaveAndUpdateRequestDto.getKind());
+                                  @AuthenticationPrincipal CustomOauthUser oauthUser) throws IOException, IllegalArgumentException {
+        PostKind postKind = PostKind.convertFromString(postSaveRequestDto.getKind());
 
-        //TODO 하드코딩 리펙토링 고려
         if (postKind == PostKind.NOTICE && oauthUser.getRole() == Role.USER) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        Long postId = postService.save(postSaveAndUpdateRequestDto, oauthUser.getEmail());
+        Long postId = postService.save(postSaveRequestDto, oauthUser.getEmail());
 
         postImageService.saveImage(images, postId);
 
@@ -60,7 +59,7 @@ public class PostController {
     @RequireAuth
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<?> update(@RequestBody PostSaveAndUpdateRequestDto postUpdateRequestDto,
+    public ResponseEntity<?> update(@RequestBody PostUpdateRequestDto postUpdateRequestDto,
                                     @PathVariable Long postId,
                                     @RequestParam(value = "images") List<MultipartFile> images) {
         postService.update(postUpdateRequestDto, postId);
@@ -80,13 +79,13 @@ public class PostController {
         return postService.getPostDtoById(postId);
     }
 
-    @GetMapping("/board/{boardKind}")
-    public BoardResponseDto getBoard(@PathVariable String boardKind,
+    @GetMapping("/board/{postKind}")
+    public BoardResponseDto getBoard(@PathVariable String postKind,
                                      @PageableDefault(size = 5) Pageable pageable) {
         BoardResponseDto boardResponseDto = new BoardResponseDto();
 
         boardResponseDto.setNoticeList(postService.getNotices());
-        boardResponseDto.setPostList(postService.getPostsByKind(boardKind, pageable));
+        boardResponseDto.setPostList(postService.getPostsByKind(postKind, pageable));
 
         return boardResponseDto;
     }

@@ -1,6 +1,6 @@
 package com.project.trip.post;
 
-import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
+import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.user.entity.Role;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +10,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
 public class UserPostApiTest extends PostApiTest {
@@ -30,7 +31,7 @@ public class UserPostApiTest extends PostApiTest {
     @DisplayName("게시글 등록 성공")
     @Test
     public void successSavePostByUser() throws Exception {
-        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        PostSaveRequestDto dto = new PostSaveRequestDto();
         dto.setTitle("title");
         dto.setContent("content");
         dto.setKind("normal");
@@ -43,7 +44,7 @@ public class UserPostApiTest extends PostApiTest {
     @DisplayName("이미지 없이 게시글 등록 실패")
     @Test
     public void errorSavePostByUserWithOutImages() throws Exception {
-        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        PostSaveRequestDto dto = new PostSaveRequestDto();
         dto.setTitle("title");
         dto.setContent("content");
         dto.setKind("normal");
@@ -56,7 +57,7 @@ public class UserPostApiTest extends PostApiTest {
     @DisplayName("본문 내용 없이 게시글 등록 실패")
     @Test
     public void errorSavePostByUserWithOutForm() throws Exception {
-        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        PostSaveRequestDto dto = new PostSaveRequestDto();
         dto.setTitle("");
         dto.setContent("");
         dto.setKind("");
@@ -66,18 +67,18 @@ public class UserPostApiTest extends PostApiTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    @DisplayName("null로 게시글 등록 실패")
+    @DisplayName("null 로 게시글 등록 실패")
     @Test
     public void errorSavePostByUserWithNull() throws Exception {
         mockMvc.perform(addImagetoRequest(multipart("/posts"), 2)
                         .flashAttr("postSaveRequest", null))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isExpectationFailed());
     }
 
     @DisplayName("공지글 등록 에러")
     @Test
     public void errorSaveNoticePostByUser() throws Exception {
-        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        PostSaveRequestDto dto = new PostSaveRequestDto();
         dto.setTitle("title");
         dto.setContent("content");
         dto.setKind("notice");
@@ -90,7 +91,7 @@ public class UserPostApiTest extends PostApiTest {
     @DisplayName("알맞지 않은 글 종류로 등록 에러")
     @Test
     public void errorSavePostWithNotSuitableKindByUser() throws Exception {
-        PostSaveAndUpdateRequestDto dto = new PostSaveAndUpdateRequestDto();
+        PostSaveRequestDto dto = new PostSaveRequestDto();
         dto.setTitle("title");
         dto.setContent("content");
         dto.setKind("im_groot");

@@ -3,7 +3,8 @@ package com.project.trip.post.service;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.entity.PostKind;
-import com.project.trip.post.model.request.PostSaveAndUpdateRequestDto;
+import com.project.trip.post.model.request.PostSaveRequestDto;
+import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.model.response.PostSimpleResponseDto;
 import com.project.trip.post.repository.PostRepository;
@@ -27,17 +28,13 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Long save(PostSaveAndUpdateRequestDto postSaveAndUpdateRequestDto, String userEmail) {
+    public Long save(PostSaveRequestDto postSaveRequestDto, String userEmail) {
         User user = userService.getUserByEmail(userEmail);
+        Post post = Post.fromDto(postSaveRequestDto);
 
-        Post post = Post.from(postSaveAndUpdateRequestDto);
-
-        //좋은 방식인가? 한쪽에서 몰아서 하는게 좋을까?
         post.setWriter(user);
-        user.addPost(post);
 
         postRepository.save(post);
-
         return post.getId();
     }
 
@@ -49,7 +46,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void update(PostSaveAndUpdateRequestDto postUpdateRequestDto, Long postId) {
+    public void update(PostUpdateRequestDto postUpdateRequestDto, Long postId) {
         getPostById(postId).update(postUpdateRequestDto);
     }
 

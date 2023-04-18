@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(AdditionInfoUserSaveRequestDto additionInfoUserSaveRequestDto, CustomOauthUser oauthUser) {
-        User user = User.of(additionInfoUserSaveRequestDto,oauthUser);
+        User user = User.of(additionInfoUserSaveRequestDto, oauthUser);
 
         userRepository.save(user);
     }
