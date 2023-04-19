@@ -1,5 +1,7 @@
 package com.project.trip.post.controller;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.project.trip.global.annotation.RequireAuth;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
@@ -11,6 +13,7 @@ import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
 import com.project.trip.user.entity.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,6 +33,19 @@ public class PostController {
 
     private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private final String bucket;
+    @Value("${file.image.path.post.url}")
+    private final String savePath;
+
+    private final AmazonS3Client amazonS3Client;
+
+    @PostMapping
+    public void s3Test() throws IOException {
+        amazonS3Client.putObject(new PutObjectRequest(bucket, savePath,
+                File.createTempFile("temp", ".dat", new File(savePath))));
+    }
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")

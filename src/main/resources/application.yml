@@ -3,6 +3,7 @@ spring:
     import:
     - application-oauth.yml
     - application-static.yml
+    - application-aws.yml
   h2:
     console:
       path: /h2-console
