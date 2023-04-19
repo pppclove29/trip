@@ -6,3 +6,6 @@ file:
         url: "src/main/resources/static/image/post/"
         format: "%s%s/image%s.jpg"
 
+tour:
+  url: "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=BG%2BI3xcKWJb%2FzSP00LVR6HAvtnexVAMJK%2FRGqgsbF5bz%2FsQZaCpcEv4gcSHdVxeYDLzu%2BzD9l5jWWDD3CMn0cA%3D%3D&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json"
+
