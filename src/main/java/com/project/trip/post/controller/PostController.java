@@ -13,6 +13,7 @@ import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
 import com.project.trip.user.entity.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -35,13 +36,15 @@ public class PostController {
     private final PostImageServiceImpl postImageService;
 
     @Value("${cloud.aws.s3.bucket}")
-    private final String bucket;
+    private  String bucket;
     @Value("${file.image.path.post.url}")
-    private final String savePath;
+    private  String savePath;
+
 
     private final AmazonS3Client amazonS3Client;
 
-    @PostMapping
+
+    @PostMapping("/posts/aws")
     public void s3Test() throws IOException {
         amazonS3Client.putObject(new PutObjectRequest(bucket, savePath,
                 File.createTempFile("temp", ".dat", new File(savePath))));
