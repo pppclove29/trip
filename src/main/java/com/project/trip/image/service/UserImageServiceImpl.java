@@ -2,11 +2,10 @@ package com.project.trip.image.service;
 
 import com.project.trip.image.entity.Image;
 import com.project.trip.image.entity.UserImage;
-import com.project.trip.image.repository.UserImageRepository;
+import com.project.trip.image.model.repository.UserImageRepository;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserImageServiceImpl implements ImageService {
-    @Value("${file.image.path.user}")
-    private String userImageSavePath;
+    //TODO 유저 이미지도 동일하게 s3로 할건데 어케할지
+    private final String userImageSavePath = "src/main/resources/static/image/user/";
     private final UserImageRepository imageRepository;
     private final UserServiceImpl userService;
 

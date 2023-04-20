@@ -16,14 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomOauthUserService extends DefaultOAuth2UserService {
     private final UserServiceImpl userService;
 
-    String email;
-
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        email = oAuth2User.getAttribute("email");
+        String email = oAuth2User.getAttribute("email");
 
         if (userService.checkMemberByEmail(email)) {
             return new CustomOauthUser(userService.getUserByEmail(email));

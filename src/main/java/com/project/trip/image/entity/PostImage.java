@@ -1,18 +1,19 @@
 package com.project.trip.image.entity;
 
 import com.project.trip.post.entity.Post;
-import com.project.trip.user.entity.User;
 import jakarta.persistence.*;
+
+import java.util.UUID;
 
 @DiscriminatorValue("P")
 @Entity
 public class PostImage extends Image{
     protected PostImage(){}
 
-    public static PostImage fromPostImagePath(String imagePath) {
+    public static PostImage fromPostUUID(UUID uuid) {
         PostImage image = new PostImage();
 
-        image.url = imagePath;
+        image.uuid = uuid.toString();
 
         return image;
     }

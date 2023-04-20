@@ -18,6 +18,7 @@ public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomOauthUser userDetails = (CustomOauthUser) authentication.getPrincipal();
 
-        response.sendRedirect(userDetails.getRedirect());
+        //response.sendRedirect(userDetails.getRedirect());
+        response.sendRedirect("/user/save/temp");
     }
 }

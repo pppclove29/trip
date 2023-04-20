@@ -15,11 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class PlanController {
 
     PlanServiceImpl planService;
-    @GetMapping
-    public String show(){
-
-        return "plan";
-    }
     @PostMapping
     public void save(@RequestBody @Valid PlanSaveRequest planSaveRequest){
         // 세션에서 로그인 유저 정보 받아온다.

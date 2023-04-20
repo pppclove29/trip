@@ -13,7 +13,7 @@ public class UserImage extends Image {
     public static UserImage fromUserImagePath(String imagePath, User user) {
         UserImage image = new UserImage();
 
-        image.url = imagePath;
+        image.uuid = imagePath;
         image.user = user;
 
         return image;
