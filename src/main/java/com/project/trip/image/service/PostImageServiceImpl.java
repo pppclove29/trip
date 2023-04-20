@@ -1,6 +1,7 @@
 package com.project.trip.image.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.project.trip.image.entity.Image;
 import com.project.trip.image.entity.PostImage;
 import com.project.trip.image.model.repository.PostImageRepository;

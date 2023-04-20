@@ -1,2 +1,7 @@
-
-
+file:
+  image:
+    path:
+      user: src/main/resources/static/image/user/
+      post:
+        url: src/main/resources/static/image/post/
+        format: "%s%s/image%s.jpg"
