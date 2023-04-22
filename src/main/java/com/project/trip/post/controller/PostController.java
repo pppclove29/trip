@@ -1,7 +1,5 @@
 package com.project.trip.post.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.project.trip.global.annotation.RequireAuth;
 import com.project.trip.global.oauth.CustomOauthUser;
 import com.project.trip.image.service.PostImageServiceImpl;
@@ -12,8 +10,8 @@ import com.project.trip.post.model.response.BoardResponseDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
 import com.project.trip.user.entity.Role;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,33 +31,10 @@ public class PostController {
     private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
 
-    private final AmazonS3 amazonS3;
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-    @Value("${file.image.path.post.url}")
-    private String savePath;
-
-    @PostMapping("/posts/s3test")
-    public void test(@RequestParam(value = "images") List<MultipartFile> images) {
-        PostSaveRequestDto postSaveRequestDto = new PostSaveRequestDto();
-        postSaveRequestDto.setTitle("111");
-        postSaveRequestDto.setContent("222");
-        postSaveRequestDto.setKind("normal");
-
-        Long postId = postService.save(postSaveRequestDto, "pppclove29@gmail.com");
-        postImageService.saveImage(images, postId);
-    }
-
-    @PostMapping("/empty")
-    public void s3Test() throws IOException {
-        amazonS3.putObject(new PutObjectRequest(bucket, savePath,
-                File.createTempFile("temp", ".dat", new File(savePath))));
-    }
-
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")
     public ResponseEntity<?> save(@ModelAttribute(value = "postSaveRequest") PostSaveRequestDto postSaveRequestDto,
-                                  @RequestParam(value = "images") List<MultipartFile> images,
+                                  @RequestParam(value = "images", required = false) List<MultipartFile> images,
                                   @AuthenticationPrincipal CustomOauthUser oauthUser) throws IOException, IllegalArgumentException {
         PostKind postKind = PostKind.convertFromString(postSaveRequestDto.getKind());
 
@@ -86,10 +60,14 @@ public class PostController {
     @RequireAuth
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<?> update(@RequestBody PostUpdateRequestDto postUpdateRequestDto,
+    public ResponseEntity<?> update(@ModelAttribute("postUpdateRequest") PostUpdateRequestDto postUpdateRequestDto,
                                     @PathVariable Long postId,
-                                    @RequestParam(value = "images") List<MultipartFile> images) {
+                                    @RequestParam(value = "images", required = false) List<MultipartFile> images) {
         postService.update(postUpdateRequestDto, postId);
+
+        postImageService.delete(postId);
+        postImageService.saveImage(images, postId);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -103,12 +81,14 @@ public class PostController {
 
     @GetMapping("/posts/{postId}")
     public PostResponseDto getPostById(@PathVariable Long postId) {
+        //TODO 이미지 반환 필요
+        //TODO 프론트에서 S3로 가져가서 받아오는게 나으려나? UUID만 주고
         return postService.getPostDtoById(postId);
     }
 
     @GetMapping("/board/{postKind}")
     public BoardResponseDto getBoard(@PathVariable String postKind,
-                                     @PageableDefault(size = 5) Pageable pageable) {
+                                     @PageableDefault Pageable pageable) {
         BoardResponseDto boardResponseDto = new BoardResponseDto();
 
         boardResponseDto.setNoticeList(postService.getNotices());
@@ -120,6 +100,6 @@ public class PostController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleMethodNoPostFoundException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("no posts founded");
+                .body("No posts founded" + ex.getMessage());
     }
 }

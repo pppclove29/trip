@@ -10,8 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.nio.file.PathMatcher;
 
 @RequiredArgsConstructor
 @Component
@@ -25,7 +28,7 @@ public class PostAuthInterceptor implements HandlerInterceptor {
         if (((HandlerMethod) handler).getMethod().isAnnotationPresent(RequireAuth.class)) {
             CustomOauthUser oauthUser = getUserFromSession();
 
-            //TODO 따로 컨트롤러를 만들던지 해서 빼자
+            //TODO 따로 컨트롤러를 만들던지 해서 빼자, 권한 관리 너무 빡세다
             if (oauthUser.getRole().equals(Role.ADMIN)) {
                 return true;
             }
@@ -47,11 +50,9 @@ public class PostAuthInterceptor implements HandlerInterceptor {
     }
 
     private Long getPostIdFromPath(String path) {
-        //TODO 너무 하드코딩 아니야?
-        path = path.replaceAll("/posts/","");
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+        String postId = pathMatcher.extractUriTemplateVariables("/posts/{postId}", path).get("postId");
 
-        String[] strings = path.split("/");
-
-        return Long.parseLong(strings[0]);
+        return Long.parseLong(postId);
     }
 }

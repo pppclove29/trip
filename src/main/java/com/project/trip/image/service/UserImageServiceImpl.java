@@ -2,7 +2,7 @@ package com.project.trip.image.service;
 
 import com.project.trip.image.entity.Image;
 import com.project.trip.image.entity.UserImage;
-import com.project.trip.image.model.repository.UserImageRepository;
+import com.project.trip.image.model.repository.ImageRepository;
 import com.project.trip.user.entity.User;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -22,21 +23,16 @@ import java.util.List;
 public class UserImageServiceImpl implements ImageService {
     //TODO 유저 이미지도 동일하게 s3로 할건데 어케할지
     private final String userImageSavePath = "src/main/resources/static/image/user/";
-    private final UserImageRepository imageRepository;
+    private final ImageRepository imageRepository;
     private final UserServiceImpl userService;
 
     @Override
-    public List<Image> getImage(Long sid) {
+    public List<Image> getImage(Long userId) {
         return null;
     }
 
     @Override
-    public void update() {
-
-    }
-
-    @Override
-    public void delete() {
+    public void delete(Long userId) {
 
     }
 
@@ -49,6 +45,7 @@ public class UserImageServiceImpl implements ImageService {
         }
     }
 
+    //TODO S3저장
     private void saveImageToServer(URL imageUrl, String email) throws IOException {
         String totalPath = userImageSavePath + email + "/picture.jpg";
 

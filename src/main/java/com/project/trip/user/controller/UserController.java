@@ -31,13 +31,4 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-    
-    //TODO 테스트 끝나면 지울 것
-    @GetMapping("/user/save/temp")
-    public void temp(@AuthenticationPrincipal CustomOauthUser user){
-        System.out.println("temp 실행");
-        AdditionInfoUserSaveRequestDto additionInfoUserSaveRequestDto = new AdditionInfoUserSaveRequestDto();
-        additionInfoUserSaveRequestDto.setPhoneNumber("!!!!!!!!");
-        userService.save(additionInfoUserSaveRequestDto, user);
-    }
 }

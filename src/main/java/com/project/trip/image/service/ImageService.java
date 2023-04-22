@@ -15,7 +15,5 @@ public interface ImageService {
 
     List<Image> getImage(Long sid);
 
-    void update();
-
-    void delete();
+    void delete(Long sid);
 }

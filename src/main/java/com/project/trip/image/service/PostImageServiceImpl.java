@@ -1,10 +1,10 @@
 package com.project.trip.image.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.project.trip.image.entity.Image;
 import com.project.trip.image.entity.PostImage;
-import com.project.trip.image.model.repository.PostImageRepository;
+import com.project.trip.image.model.repository.ImageRepository;
 import com.project.trip.post.entity.Post;
 import com.project.trip.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -25,33 +25,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class PostImageServiceImpl implements ImageService {
-    private final PostImageRepository imageRepository;
+    private final ImageRepository imageRepository;
     private final PostServiceImpl postService;
     private final AmazonS3 amazonS3;
-
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Override
-    public List<Image> getImage(Long sid) {
-        return null;
-    }
-
-
-    @Override
-    public void update() {
-
+    public List<Image> getImage(Long postId) {
+        return postService.getPostById(postId).getImages().stream().map(image -> (Image) image).toList();
     }
 
     @Override
-    public void delete() {
+    public void delete(Long postId) {
+        Post post = postService.getPostById(postId);
+        List<String> uuids = post.getImages().stream().map(Image::getUuid).toList();
 
+        amazonS3.deleteObjects(new DeleteObjectsRequest(bucket)
+                .withKeys(uuids.toArray(new String[post.getImages().size()])));
     }
 
     public void saveImage(List<MultipartFile> images, Long postId) {
+        if(images == null){
+            return;
+        }
+
         Post post = postService.getPostById(postId);
-        System.out.println("size : " + images.size());
 
         for (MultipartFile image : images) {
             UUID uuid = UUID.randomUUID();
@@ -72,6 +72,8 @@ public class PostImageServiceImpl implements ImageService {
             outputStream.write(multipartFile.getBytes());
         }
         amazonS3.putObject(bucket, uuid.toString(), file);
+
+        file.delete();
     }
 
     private void saveImageToDB(Post post, UUID uuid) {
