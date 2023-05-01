@@ -10,5 +10,5 @@ public interface UserService {
 
     User getUserByEmail(String email);
 
-    boolean checkMemberByEmail(String email);
+    boolean isExistMemberByEmail(String email);
 }

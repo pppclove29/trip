@@ -1,9 +1,7 @@
 package com.project.trip.global.oauth;
 
-import com.project.trip.image.service.UserImageServiceImpl;
 import com.project.trip.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -23,7 +21,7 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
 
         String email = oAuth2User.getAttribute("email");
 
-        if (userService.checkMemberByEmail(email)) {
+        if (userService.isExistMemberByEmail(email)) {
             return new CustomOauthUser(userService.getUserByEmail(email));
         }
 

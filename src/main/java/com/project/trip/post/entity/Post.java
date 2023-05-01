@@ -40,7 +40,7 @@ public class Post extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     private User writer;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> images = new ArrayList<>();
 
     @ManyToMany
