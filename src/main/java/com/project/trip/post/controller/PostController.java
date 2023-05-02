@@ -10,7 +10,6 @@ import com.project.trip.post.model.response.BoardResponseDto;
 import com.project.trip.post.model.response.PostResponseDto;
 import com.project.trip.post.service.PostServiceImpl;
 import com.project.trip.user.entity.Role;
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

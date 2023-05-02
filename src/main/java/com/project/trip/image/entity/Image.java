@@ -11,7 +11,7 @@ public class Image {
     protected Image(){};
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @Column(name = "IMAGE_ID", nullable = false)
     private Long id;
 
     protected String uuid;
