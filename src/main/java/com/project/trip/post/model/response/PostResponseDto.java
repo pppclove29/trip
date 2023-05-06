@@ -14,7 +14,6 @@ public class PostResponseDto {
     private int views;
     private int likes;
     private boolean doLike;
-    //TODO comment list
 
     private PostResponseDto() {/* 생성자 숨김 */}
 

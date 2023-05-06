@@ -1,5 +1,6 @@
 package com.project.trip.post.entity;
 
+import com.project.trip.comment.entity.Commentt;
 import com.project.trip.global.mapper.BaseTime;
 import com.project.trip.image.entity.PostImage;
 import com.project.trip.post.model.request.PostSaveRequestDto;
@@ -51,6 +52,9 @@ public class Post extends BaseTime {
     )
     private List<User> staredUser = new ArrayList<>();
     private int views = 0;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Commentt> comments = new ArrayList<>();
 
     public void update(PostUpdateRequestDto postUpdateRequestDto) {
         title = postUpdateRequestDto.getTitle();

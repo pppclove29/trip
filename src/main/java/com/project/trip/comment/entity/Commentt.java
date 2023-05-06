@@ -4,12 +4,16 @@ import com.project.trip.global.mapper.BaseTime;
 import com.project.trip.post.entity.Post;
 import com.project.trip.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 @Entity
-public class Comment extends BaseTime {
+public class Commentt extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,8 +31,21 @@ public class Comment extends BaseTime {
     private Post post;
 
     @ManyToOne
-    private Comment parent;
+    private Commentt parent;
 
-    @OneToMany
-    private List<Comment> children;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Commentt> children = new ArrayList<>();
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getComments().add(this);
+    }
+
+    public void setParent(Commentt parent) {
+        this.parent = parent;
+    }
+
+    public void addChild(Commentt child) {
+        this.children.add(child);
+    }
 }
