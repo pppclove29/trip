@@ -25,3 +25,4 @@ spring:
       prefix: /WEB-INF/views/
       suffix: .jsp
     static-path-pattern: /resources/static/**
+
