@@ -1,6 +1,6 @@
 package com.project.trip.image.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 
 @DiscriminatorColumn

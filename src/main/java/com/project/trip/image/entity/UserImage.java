@@ -1,7 +1,7 @@
 package com.project.trip.image.entity;
 
 import com.project.trip.user.entity.User;
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 
 @DiscriminatorValue("U")

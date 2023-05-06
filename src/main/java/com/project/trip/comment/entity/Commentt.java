@@ -3,10 +3,11 @@ package com.project.trip.comment.entity;
 import com.project.trip.global.mapper.BaseTime;
 import com.project.trip.post.entity.Post;
 import com.project.trip.user.entity.User;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 

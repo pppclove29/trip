@@ -2,7 +2,7 @@ package com.project.trip.plan.entity;
 
 
 import com.project.trip.user.entity.User;
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 public class Plan {

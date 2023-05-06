@@ -2,8 +2,8 @@ package com.project.trip.user.model;
 
 import com.project.trip.user.entity.Role;
 import com.project.trip.user.entity.User;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public class TempUser{

@@ -1,7 +1,7 @@
 package com.project.trip.image.entity;
 
 import com.project.trip.post.entity.Post;
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.util.UUID;
 
