@@ -1,6 +1,5 @@
 package com.project.trip.global.config;
 
-import com.project.trip.global.handler.OauthAuthenticationSuccessHandler;
 import com.project.trip.global.oauth.CustomOauthUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomOauthUserService customOauthUserService;
-    private final OauthAuthenticationSuccessHandler oauthAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -25,8 +23,8 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error", "/test").permitAll()
-                .requestMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error", "/test").permitAll()
+                .antMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .logout()
@@ -34,9 +32,7 @@ public class SecurityConfig {
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()
-                .userService(customOauthUserService)
-                .and()
-                .successHandler(oauthAuthenticationSuccessHandler);
+                .userService(customOauthUserService);
         return http.build();
     }
 }

@@ -2,7 +2,7 @@ package com.project.trip.plan.controller;
 
 import com.project.trip.plan.model.request.PlanSaveRequest;
 import com.project.trip.plan.service.PlanServiceImpl;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

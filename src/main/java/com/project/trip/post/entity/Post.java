@@ -6,7 +6,7 @@ import com.project.trip.image.entity.PostImage;
 import com.project.trip.post.model.request.PostSaveRequestDto;
 import com.project.trip.post.model.request.PostUpdateRequestDto;
 import com.project.trip.user.entity.User;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
