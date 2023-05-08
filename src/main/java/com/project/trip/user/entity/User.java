@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "USERS")
+@Table
 @Getter
 @Entity
 public class User {

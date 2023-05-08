@@ -1,13 +1,11 @@
 package com.project.trip.global.config;
 
+import com.project.trip.global.handler.OauthAuthenticationSuccessHandler;
 import com.project.trip.global.oauth.CustomOauthUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
-import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 
 @RequiredArgsConstructor
@@ -15,6 +13,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomOauthUserService customOauthUserService;
+    private final OauthAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    private final String[] permitAllUrls = {"/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error", "/test"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -23,7 +24,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error", "/test").permitAll()
+                .antMatchers(permitAllUrls).permitAll()
                 .antMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
@@ -32,7 +33,10 @@ public class SecurityConfig {
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()
-                .userService(customOauthUserService);
+                .userService(customOauthUserService)
+                .and()
+                .successHandler(authenticationSuccessHandler);
+
         return http.build();
     }
 }

@@ -19,11 +19,16 @@ public class CustomOauthUserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
+        System.out.println("성공적인 loaduser 실행");
+
+        //TODO 얘를 어떻게 처리해서 보내줄지????
+        //userRequest.getAccessToken();
+
         String email = oAuth2User.getAttribute("email");
 
-        if (userService.isExistMemberByEmail(email)) {
-            return new CustomOauthUser(userService.getUserByEmail(email));
-        }
+//        if (userService.isExistMemberByEmail(email)) {
+//            return new CustomOauthUser(userService.getUserByEmail(email));
+//        }
 
         return new CustomOauthUser(oAuth2User);
     }
