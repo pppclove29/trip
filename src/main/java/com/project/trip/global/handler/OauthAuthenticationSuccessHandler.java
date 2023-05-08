@@ -16,18 +16,6 @@ import java.io.IOException;
 public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println(request.getPathInfo());
-        System.out.println("-----------------");
-        while(request.getAttributeNames().hasMoreElements()) {
-            System.out.println(request.getAttributeNames().nextElement());
-        }
-        System.out.println("-----------------");
-        System.out.println(request.getServletPath());
-        System.out.println(request.getAuthType());
-        System.out.println(request.getMethod());
-        System.out.println(request.getRequestURI());
-
-
         CustomOauthUser userDetails = (CustomOauthUser) authentication.getPrincipal();
 
         //TODO 구글 로그인 후 추가입력 페이지 or 일반 페이지 반환
@@ -36,6 +24,6 @@ public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessH
         //TODO Front 서버에 추가 요구사항을 입력하는 url로 이동해야함(view)
 
         //response.sendRedirect(userDetails.getRedirect());
-        response.sendRedirect("/asdasdasd");
+        //response.sendRedirect("/asdasdasd");
     }
 }
