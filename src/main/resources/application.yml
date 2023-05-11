@@ -10,7 +10,7 @@ spring:
     show-sql: false
     hibernate:
       format_sql: false
-      ddl-auto: create-drop
+      ddl-auto: update
 
   mvc:
     view:
@@ -19,4 +19,8 @@ spring:
     static-path-pattern: /resources/static/**
   datasource:
     driver-class-name:
+
+logging:
+  level:
+    root: debug
 
