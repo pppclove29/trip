@@ -19,7 +19,7 @@ public class SecurityConfig {
     private final CustomOauthUserService customOauthUserService;
     private final OauthAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    private final String[] permitAllUrls = {"/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error", "/test"};
+    private final String[] permitAllUrls = {"/index", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/favicon.ico", "/resources/**", "/error", "/test", "/temp"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
