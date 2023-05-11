@@ -12,5 +12,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Login Failed: " + exception.getMessage());
+
+        System.out.println("뭔가 로그인 실패!!!!");
+
+        response.setHeader("rojiwon", "sibara login fail");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "you are not human");
     }
 }

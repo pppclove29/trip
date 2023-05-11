@@ -1,6 +1,6 @@
 package com.project.trip.global.config;
 
-import com.project.trip.global.handler.OauthAuthenticationSuccessHandler;
+//import com.project.trip.global.handler.OauthAuthenticationSuccessHandler;
 import com.project.trip.global.oauth.CustomOauthUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,10 +13,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomOauthUserService customOauthUserService;
-    private final OauthAuthenticationSuccessHandler authenticationSuccessHandler;
+    //private final OauthAuthenticationSuccessHandler authenticationSuccessHandler;
 
     private final String[] permitAllUrls =
-            {"/login", "/index", "/css/**", "/images/**", "/js/**", "/h2-console/**",
+            {"/", "/login", "/index", "/css/**", "/images/**", "/js/**", "/h2-console/**",
             "/profile", "/favicon.ico", "/resources/**", "/error", "/test", "/temp"};
 
     @Bean
@@ -40,10 +40,11 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .oauth2Login()
+                .failureHandler(new CustomAuthenticationFailureHandler())
                 .userInfoEndpoint()
-                .userService(customOauthUserService)
-                .and()
-                .successHandler(authenticationSuccessHandler);
+                .userService(customOauthUserService);
+//                .and()
+//                .successHandler(authenticationSuccessHandler);
 
         return http.build();
     }
