@@ -10,6 +10,7 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+        System.out.println("Login Failed: " + authException.getMessage());
         System.out.println("인증 실패");
 
         response.setHeader("nojiwon", "sibara");
