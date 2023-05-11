@@ -98,7 +98,7 @@ public class PostController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleMethodNoPostFoundException(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("No posts founded" + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("No posts founded");
     }
 }
