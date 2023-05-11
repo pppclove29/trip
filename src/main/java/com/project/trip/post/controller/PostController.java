@@ -30,6 +30,11 @@ public class PostController {
     private final PostServiceImpl postService;
     private final PostImageServiceImpl postImageService;
 
+    @GetMapping("/hello")
+    public String hello(){
+        return "hello ddd";
+    }
+
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/posts")
     public ResponseEntity<?> save(@ModelAttribute(value = "postSaveRequest") PostSaveRequestDto postSaveRequestDto,
