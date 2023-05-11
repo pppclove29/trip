@@ -36,9 +36,13 @@ public class SecurityConfig {
                 .logout()
                 .logoutSuccessUrl("/")
                 .and()
+                .exceptionHandling()
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .and()
                 .oauth2Login()
-                .userInfoEndpoint()
-                .userService(customOauthUserService)
+                    .userInfoEndpoint()
+                    .userService(customOauthUserService)
                 .and()
                 .successHandler(authenticationSuccessHandler);
 
