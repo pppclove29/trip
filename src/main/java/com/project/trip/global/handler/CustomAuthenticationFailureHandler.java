@@ -1,4 +1,4 @@
-package com.project.trip.global.config;
+package com.project.trip.global.handler;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -13,8 +13,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Login Failed: " + exception.getMessage());
-        System.out.println(exception.getCause().toString());
-        System.out.println(Arrays.toString(exception.getStackTrace()));
 
         System.out.println("뭔가 로그인 실패!!!!");
 

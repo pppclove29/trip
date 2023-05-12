@@ -1,4 +1,4 @@
-package com.project.trip.global.config;
+package com.project.trip.global.handler;
 
 import org.springframework.security.web.access.AccessDeniedHandler;
 
